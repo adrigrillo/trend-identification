@@ -270,3 +270,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+.DS_Store
+src/.DS_Store
+src/methods/hp_filter.py
+src/methods/macrodata.dta
+src/methods/test.csv
+src/simulator/.DS_Store
