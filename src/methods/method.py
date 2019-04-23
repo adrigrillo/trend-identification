@@ -11,5 +11,5 @@ import numpy as np
 
 class Method(abc.ABC):
     @abc.abstractmethod
-    def detect_trend(self, time_series: np.ndarray):
+    def detect_trend(self, time_series_x: np.ndarray,time_series_y: np.ndarray):
         raise NotImplementedError
