@@ -30,27 +30,29 @@ from src.methods.method import Method
 
 class MannKendall(Method):
 
-    def detect_trend(self, time_series: np.ndarray, alpha=0.05):
+    def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray,
+                     alpha=0.05):
         """
         Method that performs the Mann-Kendall test to the given time-series
         or signal.
 
-        :param time_series: a vector of data
+        :param time_series_x: time variable of the time series to analyze
+        :param time_series_y: value of the time series to analyze
         :param alpha: significance level (0.05 default)
         :return: a tuple with: true if there is a trend or false otherwise, the
         trend type (increasing, decreasing or no trend), the p value of the
         significance test and normalized test statistics.
         """
-        n = len(time_series)
+        n = len(time_series_y)
 
         # calculate S
         s = 0
         for k in range(n - 1):
             for j in range(k + 1, n):
-                s += np.sign(time_series[j] - time_series[k])
+                s += np.sign(time_series_y[j] - time_series_y[k])
 
         # calculate the unique data
-        unique_x = np.unique(time_series)
+        unique_x = np.unique(time_series_y)
         g = len(unique_x)
 
         # calculate the var(s)
@@ -59,7 +61,7 @@ class MannKendall(Method):
         else:  # there are some ties in data
             tp = np.zeros(unique_x.shape)
             for i in range(len(unique_x)):
-                tp[i] = sum(time_series == unique_x[i])
+                tp[i] = sum(time_series_y == unique_x[i])
             var_s = (n * (n - 1) * (2 * n + 5) - np.sum(tp * (tp - 1) * (2 * tp + 5))) / 18
 
         if s > 0:

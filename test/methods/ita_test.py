@@ -8,13 +8,14 @@ from src.methods.ita import ITA
 
 def test_detect_trend():
     x = np.arange(0, 100)
+    y = np.arange(0, 100)
     noise = np.random.normal(size=100)
-    signal = x + noise
+    signal = y + noise
 
     file_id = str(uuid.uuid1())
 
     ita = ITA()
-    ita.detect_trend(signal, file_id=file_id)
+    ita.detect_trend(time_series_x=x, time_series_y=signal, file_id=file_id, plot=True)
 
     file_found = False
     results_folder = '../../results/ita/'
