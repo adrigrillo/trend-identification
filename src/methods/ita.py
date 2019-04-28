@@ -31,7 +31,7 @@ class ITA(Method):
         """
         self.save_path = save_path
         self.save_format = save_format
-        self.save_name = 'ita_result'
+        self.save_name = save_name
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray,
                      plot: bool = False, file_id: str = None):
