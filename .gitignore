@@ -270,8 +270,34 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-.DS_Store
-src/.DS_Store
 src/methods/macrodata.dta
 src/methods/test.csv
-src/data_handler/.DS_Store
+
+### macOS template
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+

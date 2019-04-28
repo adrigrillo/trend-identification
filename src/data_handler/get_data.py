@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-import math
-import view 
+
+from src.data_handler import view
 
 x = np.arange(0, view.number_of_data)
 if view.gaussian:
@@ -13,7 +13,7 @@ x = eval(view.equation)
 
 if view.seasonality:
     y = np.arange(0, view.number_of_data)
-    #y = eval(view.equation_season)
+    # y = eval(view.equation_season)
     y = np.sin(y)
     data_processed = x + noise + y
 else:
