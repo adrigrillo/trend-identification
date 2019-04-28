@@ -272,7 +272,6 @@ $RECYCLE.BIN/
 *.lnk
 .DS_Store
 src/.DS_Store
-src/methods/hp_filter.py
 src/methods/macrodata.dta
 src/methods/test.csv
 src/data_handler/.DS_Store
