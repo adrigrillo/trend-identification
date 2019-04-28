@@ -22,7 +22,7 @@ class DWS(Method):
         self.save_name = save_name
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        pass
+        raise NotImplementedError
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        pass
+        raise NotImplementedError
