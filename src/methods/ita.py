@@ -49,6 +49,8 @@ class ITA(Method):
         first_half = np.sort(first_half)
         second_half = np.sort(second_half)
 
+        # TODO: implement a numeric method
+
         self._plot_ita(file_id=file_id,
                        plot=plot,
                        first_half=first_half,
@@ -58,7 +60,7 @@ class ITA(Method):
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         """ Not valid for ITA """
-        self.estimate_trend(time_series_x, time_series_y)
+        raise NotImplementedError('This method does not have the capability of estimating a trend')
 
     def _plot_ita(self, first_half: np.ndarray, second_half: np.ndarray,
                   time_series_min, time_series_max, plot: bool = False,
