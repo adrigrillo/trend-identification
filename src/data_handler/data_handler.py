@@ -21,33 +21,53 @@ import numpy as np
 import pandas as pd
 from scipy.io import loadmat
 
-from src.definitions import SYNTHETIC_DIR, FILE_DATA, DATA_DIR, FILE_NAME, MATLAB, CSV, X_COL, Y_COL, HEADER
+from src.definitions import *
 
+
+# reproduction of results
+np.random.seed(797)
 
 def load_data():
     pass
 
 
-def generate_synthetic_data(method: str, config_file_name: str):
-    if method is 'func':
-        # generate data using a function
-        pass
-    elif method is 'data':
-        # generate data using data
-        config = configparser.ConfigParser(allow_no_value=True)
-        config_file_path = SYNTHETIC_DIR + '/' + config_file_name
-        config.read(config_file_path)
-        generate_from_data(config)
-    else:
-        raise AttributeError('The method {0} does not match with any valid option (func or data)'.format(method))
+def generate_synthetic_data(method: str, config_file_name: str, data_points: int = 300) -> None:
+    config_file_path = SYNTHETIC_DIR + '/' + config_file_name
 
+    generation_params = configparser.ConfigParser(allow_no_value=True)
+    generation_params.read(config_file_path)
 
-def generate_from_data(generation_params: configparser.ConfigParser):
     sections = generation_params.sections()
-    if FILE_DATA in sections:
-        file_loader(generation_params[FILE_DATA])
 
-    print(generation_params.sections())
+    x_values = None
+    y_values = None
+    if FILE_DATA in sections:
+        if method is 'func':
+            # generate data using a function
+            pass
+        elif method is 'data':
+            # generate data using data
+            x_values, y_values = file_loader(generation_params[FILE_DATA])
+            data_points = y_values.shape[0]
+        else:
+            raise AttributeError('The method {0} does not match with any valid option (func or data).'.format(method))
+    else:
+        raise ValueError('The configuration file does not contains any data to generate the trend.')
+
+    noise_values = np.zeros(data_points)
+    if NOISE_DATA in sections:
+        noise_values = generate_noise(generation_params[NOISE_DATA], data_points)
+
+    seasonality_values = np.zeros(data_points)
+    if SEASONALITY_DATA in sections:
+        seasonality_values = generate_seasonality(generation_params[SEASONALITY_DATA], data_points)
+
+    y_values = y_values + noise_values + seasonality_values
+    time_series = np.array(x_values, y_values)
+
+    output_name = DATA_DIR + generation_params[SAVE_DATA][FILE_NAME]
+    header = ['x', 'y']
+    pd.DataFrame(time_series).to_csv(output_name, header=header)
 
 
 def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.ndarray]:
@@ -110,10 +130,49 @@ def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.
     else:
         raise FileNotFoundError
 
-    values_x = data_squeezer(data_file[x_col])
-    values_y = data_squeezer(data_file[y_col])
+    x_values = data_squeezer(data_file[x_col])
+    y_values = data_squeezer(data_file[y_col])
 
-    return values_x, values_y
+    return x_values, y_values
+
+
+def generate_seasonality(seasonality_params: configparser.ConfigParser, data_points: int) -> np.ndarray:
+    """
+    Method that uses the configuration relative to the seasonality ([seasonality]) and the
+    number of data points required to generate a numpy array with the values that represent
+    the seasonality of the system.
+
+    The seasonality must be defined in the configuration file as python code and is evaluated
+    using the `eval()` function in python. As the result has to be a numpy array, the set of
+    function admitted should use the **numpy library** referring at it like np. An example is:
+
+    ```\n
+    [seasonality]\n
+    function=np.sin(y)+np.cos(y/2)\n
+    ```
+
+    :param seasonality_params: parameters relative to the seasonality
+    :param data_points: number of data points of the series
+    :return: data points that represent the time series seasonality component
+    """
+    y: np.ndarray = np.arange(data_points)  # this will be used by the function
+    func: str = seasonality_params[FUNC]
+    return np.array(eval(func))
+
+
+def generate_noise(noise_params: configparser.ConfigParser, data_points: int) -> np.ndarray:
+    """
+    Method that uses the configuration relative to the noise ([noise]) and the number of
+    data points required to generate a numpy array with the values that represent the noise
+    of the system.
+
+    :param noise_params: parameters relative to the noise
+    :param data_points: number of data points of the series
+    :return: data points that represent the white gaussian noise
+    """
+    mean = int(noise_params[MEAN])
+    deviation = int(noise_params[DEVIATION])
+    return np.random.normal(mean, deviation, data_points)
 
 
 def data_squeezer(data: np.ndarray) -> np.ndarray:

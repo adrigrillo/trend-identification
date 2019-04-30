@@ -13,6 +13,7 @@ TREND_DATA = 'trend'
 NOISE_DATA = 'noise'
 SEASONALITY_DATA = 'seasonality'
 FILE_DATA = 'file'
+SAVE_DATA = 'save'
 
 # Properties of the data handler
 
