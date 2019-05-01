@@ -4,13 +4,32 @@ data_handler_test.py
 =================
 Tests for the data_handler.py methods.
 """
-import configparser
+import os
 
-import numpy as np
 import pytest
 
-from src.data_handler.data_handler import file_loader, generate_noise, generate_seasonality
-from src.definitions import SYNTHETIC_DIR, FILE_DATA, NOISE_DATA, MEAN, DEVIATION, SEASONALITY_DATA
+from src.data_handler.data_handler import *
+from src.definitions import *
+
+
+class TestGenerateSyntheticData(object):
+    def test_generation_by_function(self):
+        file_name = 'test_func.ini'
+        x, y = generate_synthetic_data('function', file_name)
+
+        configuration = obtain_config(config_file_name=file_name)
+        output_name = configuration[SAVE_DATA][FILE_NAME]
+        output_path = DATA_DIR + '/' + output_name
+
+        if Path(output_path).is_file():
+            data = pd.read_csv(output_path)
+            read_x = np.array(data['x'], dtype=np.int).T
+            read_y = np.array(data['y']).T
+            np.testing.assert_equal(x, read_x)
+            np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
+            os.remove(output_path)
+        else:
+            pytest.fail('The file was not written')
 
 
 class TestFileLoader(object):
@@ -29,6 +48,19 @@ class TestFileLoader(object):
         configuration = obtain_config(config_file_name='test_csv_header.ini')
         x, y = file_loader(configuration[FILE_DATA])
         assert len(x) == 4999 and len(y) == 4999
+
+
+class TestTrendGenerator(object):
+    def test_trend_generation(self):
+        configuration = obtain_config(config_file_name='test_func.ini')
+        x, y = generate_trend(configuration[TREND_DATA])
+
+        data_points = int(configuration[TREND_DATA][DATA_PTS])
+        x_test = np.arange(data_points)
+        y_test = np.array((1 / 5 * x_test) ** 2 - x_test)
+
+        assert x.shape[0] == data_points
+        np.testing.assert_equal(y, y_test)
 
 
 class TestNoiseGenerator(object):

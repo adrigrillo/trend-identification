@@ -23,15 +23,15 @@ from scipy.io import loadmat
 
 from src.definitions import *
 
-
 # reproduction of results
 np.random.seed(797)
+
 
 def load_data():
     pass
 
 
-def generate_synthetic_data(method: str, config_file_name: str, data_points: int = 300) -> None:
+def generate_synthetic_data(method: str, config_file_name: str) -> Tuple[np.ndarray, np.ndarray]:
     config_file_path = SYNTHETIC_DIR + '/' + config_file_name
 
     generation_params = configparser.ConfigParser(allow_no_value=True)
@@ -39,35 +39,34 @@ def generate_synthetic_data(method: str, config_file_name: str, data_points: int
 
     sections = generation_params.sections()
 
-    x_values = None
-    y_values = None
-    if FILE_DATA in sections:
-        if method is 'func':
+    if FILE_DATA in sections or TREND_DATA in sections:
+        if method is 'function':
             # generate data using a function
-            pass
+            x_values, y_values = generate_trend(generation_params[TREND_DATA])
         elif method is 'data':
             # generate data using data
             x_values, y_values = file_loader(generation_params[FILE_DATA])
-            data_points = y_values.shape[0]
         else:
             raise AttributeError('The method {0} does not match with any valid option (func or data).'.format(method))
+        data_points = y_values.shape[0]
     else:
         raise ValueError('The configuration file does not contains any data to generate the trend.')
 
     noise_values = np.zeros(data_points)
     if NOISE_DATA in sections:
         noise_values = generate_noise(generation_params[NOISE_DATA], data_points)
-
     seasonality_values = np.zeros(data_points)
     if SEASONALITY_DATA in sections:
         seasonality_values = generate_seasonality(generation_params[SEASONALITY_DATA], data_points)
 
     y_values = y_values + noise_values + seasonality_values
-    time_series = np.array(x_values, y_values)
+    time_series = np.array([x_values, y_values]).T
 
-    output_name = DATA_DIR + generation_params[SAVE_DATA][FILE_NAME]
+    output_path = DATA_DIR + '/' + generation_params[SAVE_DATA][FILE_NAME]
     header = ['x', 'y']
-    pd.DataFrame(time_series).to_csv(output_name, header=header)
+    pd.DataFrame(time_series).to_csv(output_path, header=header)
+
+    return x_values, y_values
 
 
 def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.ndarray]:
@@ -134,6 +133,33 @@ def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.
     y_values = data_squeezer(data_file[y_col])
 
     return x_values, y_values
+
+
+def generate_trend(trend_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Method that generates the underlying trend of the time series using the function specified in the trend
+    section of the configuration ([trend]).
+
+    The trend function must be defined in the configuration file as python code and is evaluated
+    using the `eval()` function in python. As the result has to be a numpy array, the set of
+    function admitted should use the **numpy library** referring at it like np.
+
+    It needs also the number of data point that will be contained in the time series. An example is:
+
+    ```\n
+    [trend]\n
+    function=(1/5*x)**2-x\n
+    data_points=300
+    ```
+
+    :param trend_params: parameters relative to the trend
+    :return: data points that represent the time series seasonality component
+    """
+    function = trend_params[FUNC]
+    data_points = int(trend_params[DATA_PTS])
+    x = np.arange(data_points)
+    y = eval(function)
+    return x, np.array(y)
 
 
 def generate_seasonality(seasonality_params: configparser.ConfigParser, data_points: int) -> np.ndarray:

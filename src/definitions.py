@@ -22,6 +22,7 @@ HEADER = 'header'
 X_COL = 'x_column'
 Y_COL = 'y_column'
 FUNC = 'function'
+DATA_PTS = 'data_points'
 MEAN = 'mean'
 DEVIATION = 'deviation'
 
