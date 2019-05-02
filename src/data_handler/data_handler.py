@@ -19,19 +19,17 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from pywt import downcoef
 from scipy.io import loadmat
 
 from src.definitions import *
-
-# reproduction of results
-np.random.seed(797)
 
 
 def load_data():
     pass
 
 
-def generate_synthetic_data(method: str, config_file_name: str) -> Tuple[np.ndarray, np.ndarray]:
+def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
     config_file_path = SYNTHETIC_DIR + '/' + config_file_name
 
     generation_params = configparser.ConfigParser(allow_no_value=True)
@@ -42,13 +40,17 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple[np.ndar
     if FILE_DATA in sections or TREND_DATA in sections:
         if method is 'function':
             # generate data using a function
-            x_values, y_values = generate_trend(generation_params[TREND_DATA])
+            x_values, trend_values = generate_trend(generation_params[TREND_DATA])
         elif method is 'data':
             # generate data using data
-            x_values, y_values = file_loader(generation_params[FILE_DATA])
+            file_params = generation_params[FILE_DATA]
+            x_values, trend_values = file_loader(file_params)
+            trend_values = smooth_for_trend(trend_values, file_params)
         else:
             raise AttributeError('The method {0} does not match with any valid option (func or data).'.format(method))
-        data_points = y_values.shape[0]
+        data_points = trend_values.shape[0]
+        if x_values.shape[0] > data_points:
+            x_values = np.take(x_values, np.arange(data_points))
     else:
         raise ValueError('The configuration file does not contains any data to generate the trend.')
 
@@ -59,14 +61,14 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple[np.ndar
     if SEASONALITY_DATA in sections:
         seasonality_values = generate_seasonality(generation_params[SEASONALITY_DATA], data_points)
 
-    y_values = y_values + noise_values + seasonality_values
-    time_series = np.array([x_values, y_values]).T
+    y_values: np.ndarray = trend_values + seasonality_values + noise_values
+    time_series = np.array([x_values, y_values, trend_values, seasonality_values, noise_values]).T
 
     output_path = DATA_DIR + '/' + generation_params[SAVE_DATA][FILE_NAME]
-    header = ['x', 'y']
+    header = ['x', 'y', 'trend', 'seasonality', 'noise']
     pd.DataFrame(time_series).to_csv(output_path, header=header)
 
-    return x_values, y_values
+    return x_values, y_values, trend_values, seasonality_values, noise_values
 
 
 def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.ndarray]:
@@ -115,7 +117,7 @@ def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.
         if extension == MATLAB:
             data_file = loadmat(file_path)
         elif extension == CSV:
-            header: bool = file_params.getboolean(HEADER)
+            header: bool = file_params.getboolean(HEADER, fallback=False)
             if header:
                 header_flag = 'infer'
             else:
@@ -129,8 +131,12 @@ def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.
     else:
         raise FileNotFoundError
 
-    x_values = data_squeezer(data_file[x_col])
     y_values = data_squeezer(data_file[y_col])
+
+    if x_col != 'None':
+        x_values = data_squeezer(data_file[x_col])
+    else:
+        x_values = np.arange(y_values.shape[0])
 
     return x_values, y_values
 
@@ -201,6 +207,44 @@ def generate_noise(noise_params: configparser.ConfigParser, data_points: int) ->
     return np.random.normal(mean, deviation, data_points)
 
 
+def smooth_for_trend(y_values: np.ndarray, smooth_params: configparser.ConfigParser) -> np.ndarray:
+    """
+    Method that smooth a time series using wavelet transforms. In the configuration file ([file])
+    the type of wavelet, the number of transforms and the desired length of the results is given
+    in order to perform the operation.
+
+    Remember that if the length of the result is smaller than the desired length, the
+    computation of the transformations will be halted. Moreover, if the first iteration
+    already gives a shorter time series an exception will be raised.
+
+    An example of configuration is:
+    ```\n
+    [file]\n
+    ...\n
+    wavelet=db8 #wavelet type\n
+    levels=5 #transformation levels\n
+    data_points=300 #desired length\n
+    ```
+
+    :param y_values: y values of the original time series
+    :param smooth_params: parameters relative to the smoothing
+    :return: smoothed time series that will be used as trend
+    """
+    wavelet = smooth_params[WAVELET]
+    levels = int(smooth_params[LEVELS])
+    data_points = int(smooth_params[DATA_PTS])
+
+    for i in range(levels):
+        y_values = downcoef(part='a', data=y_values, wavelet=wavelet)
+        if y_values.shape[0] - y_values.shape[0] // 2 < data_points:
+            break
+
+    if y_values.shape[0] > data_points:
+        return y_values[:data_points]
+    else:
+        raise ValueError('The original time series is to short to perform this operation')
+
+
 def data_squeezer(data: np.ndarray) -> np.ndarray:
     """
     Method to transform a numpy array to a one dimension array
@@ -208,6 +252,8 @@ def data_squeezer(data: np.ndarray) -> np.ndarray:
     :param data: data in numpy array
     :return: one dimensional numpy array
     """
+    if isinstance(data, pd.Series):
+        data = data.to_numpy()
     while len(data.shape) != 1:
         data = data.squeeze()
     return data

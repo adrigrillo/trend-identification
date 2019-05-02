@@ -21,6 +21,8 @@ FILE_NAME = 'filename'
 HEADER = 'header'
 X_COL = 'x_column'
 Y_COL = 'y_column'
+WAVELET = 'wavelet'
+LEVELS = 'levels'
 FUNC = 'function'
 DATA_PTS = 'data_points'
 MEAN = 'mean'
@@ -28,6 +30,7 @@ DEVIATION = 'deviation'
 
 MATLAB = '.mat'
 CSV = '.csv'
+
 
 # This add the root, so the everything can be executed from the terminal
 sys.path.append(ROOT_DIR)
