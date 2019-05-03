@@ -30,15 +30,21 @@ from src.methods.method import Method
 
 class MannKendall(Method):
 
-    def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray,
-                     alpha=0.05):
+    def __init__(self, alpha: float = 0.05):
+        """
+        Initialization method for Mann-Kendall
+        
+        :param alpha: significance level (0.05 default)
+        """
+        self.alpha = alpha
+
+    def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         """
         Method that performs the Mann-Kendall test to the given time-series
         or signal.
 
         :param time_series_x: time variable of the time series to analyze
         :param time_series_y: value of the time series to analyze
-        :param alpha: significance level (0.05 default)
         :return: a tuple with: true if there is a trend or false otherwise, the
         trend type (increasing, decreasing or no trend), the p value of the
         significance test and normalized test statistics.
@@ -73,7 +79,7 @@ class MannKendall(Method):
 
         # calculate the p_value
         p = 2 * (1 - norm.cdf(abs(z)))  # two tail test
-        trend_present = abs(z) > norm.ppf(1 - alpha / 2)
+        trend_present = abs(z) > norm.ppf(1 - self.alpha / 2)
 
         if (z < 0) and trend_present:
             trend_type = 'decreasing'
@@ -83,3 +89,6 @@ class MannKendall(Method):
             trend_type = 'no trend'
 
         return trend_present, trend_type, p, z
+
+    def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
+        raise NotImplementedError('This method does not have this function')
