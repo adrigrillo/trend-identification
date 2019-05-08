@@ -25,10 +25,6 @@ from scipy.io import loadmat
 from src.definitions import *
 
 
-def load_data():
-    pass
-
-
 def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
     config_file_path = SYNTHETIC_DIR + '/' + config_file_name
 
