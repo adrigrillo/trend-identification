@@ -12,10 +12,10 @@ def test_detect_trend():
     noise = np.random.normal(size=100)
     signal = y + noise
 
-    file_id = str(uuid.uuid1())#1 structuring data handler. Starting with the implementation with the low-pass method
+    file_id = str(uuid.uuid1())  # 1 structuring data handler. Starting with the implementation with the low-pass method
 
-    ita = ITA()
-    ita.detect_trend(time_series_x=x, time_series_y=signal, file_id=file_id)
+    ita = ITA(file_id=file_id)
+    ita.detect_trend(x, signal)
 
     file_found = False
     results_folder = '../../results/ita/'
