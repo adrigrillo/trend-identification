@@ -9,9 +9,15 @@ y = np.linspace(0, 500, num=1000)
 
 class theil(Method):
 
-    def detect_trend(self, time_series: np.ndarray,y, confidence):
-        return stats.theilslopes(y, x, confidence)
+    def __init__(self,confidence: float=0.9):
+        self.confidence=confidence
+
+    def detect_trend(self, time_series_x: np.ndarray,time_series_y: np.ndarray):
+        return stats.theilslopes(time_series_y, time_series_x, self.confidence)
+
+    def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
+        raise NotImplementedError('This method does not have the capability of estimating a trend')
 
 
-m = theil().detect_trend(x, y, 0.9)
+m = theil().detect_trend(x, y)
 print(m)
