@@ -1,14 +1,15 @@
-from PyEMD import EMD, Visualisation
-from src.methods.method import Method
 import matplotlib.pyplot as plt
 import numpy as np
+from PyEMD import EMD
+
+from src.methods.method import Method
 
 
 class EmpiricalModeDecomposition(Method):
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         # Extract imfs and residue
         emd = EMD()
-        emd.emd(time_series_x)
+        emd.emd(time_series_y)
         imfs, res = emd.get_imfs_and_residue()
         return imfs[-1]
 
@@ -23,20 +24,3 @@ class EmpiricalModeDecomposition(Method):
         plt.xlabel('Time')
         plt.ylabel('Trend')
         plt.show()
-
-
-# test time series:
-t = np.arange(0, 3, 0.01)
-S = np.sin(13*t + 0.2*t**1.4) - np.cos(3*t)
-S1 = t
-S2 = np.cos(22 / np.pi * t**2) + 6 * t**2
-S3 = np.empty(len(t))
-S3.fill(0.5)
-
-emd = EmpiricalModeDecomposition()
-emd.visualize_trend(S1, t)
-
-
-
-
-
