@@ -1,43 +1,78 @@
-import numpy as np
+from typing import List
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pywt
-import pywt.data
+from scipy import stats
 from sklearn.preprocessing import MinMaxScaler
 
 from src.methods.method import Method
 
 
 class DWS(Method):
-    def __init__(self, save_name: str = 'dws_result',
-                 save_path: str = '../../results/dws',
-                 save_format: str = 'png'):
+    def __init__(self, wavelet: str = 'db8', confidence: float = 0.95, num_samples: int = 5000):
         """
         Instantiation method of the discrete wavelet spectrum.
 
-        :param save_name: set the name of the file that contains the result
-        :param save_path: set the path where the result will be saved
-        :param save_format: set the file format of the result
+        :param wavelet: name of the wavelet to be used
         """
-        self.save_path = save_path
-        self.save_format = save_format
-        self.save_name = save_name
+        self.wavelet = wavelet
+        self.confidence = confidence
+        self.num_samples = num_samples
+        self.scaler = MinMaxScaler(feature_range=(-1, 1))
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        # 1. Normalize and decompose time series
-        x_normalized = self.normalize(time_series_x)
-
-        # 2. Calculate DWS
-
-        # 3. Generate noise & calculate RDWS
-        mu, sigma = 0, 1  # mean and standard deviation
-        noise = np.random.normal(mu, sigma, len(time_series_y))
-        noise = self.normalize(noise)
-
-        # 4. Repeat 3. 5000 times, calculate mean & variance of all RDWSs. Confidence interval = 95%
-
-    def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         raise NotImplementedError
 
-    def normalize(self, x: np.array):
-        scaler = MinMaxScaler((-1, 1))
-        return scaler.fit_transform(x)
+    def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
+        # 1. Normalize and decompose time series
+        norm_time_series = self.scaler.fit_transform(time_series_y.reshape(-1, 1).astype(np.float64))
+
+        # 2. Calculate DWS and spectrum value
+        # TODO: this does not properly calculate the levels raise warning
+        # max_decompositions = int(np.floor(np.log2(len(time_series_y))))
+        max_decompositions = pywt.dwt_max_level(norm_time_series.shape[0], self.wavelet)
+
+        signal_coeffs = pywt.wavedec(norm_time_series, self.wavelet, level=max_decompositions)
+        signal_spectrum = self.calculate_subsignal_spectrum(signal_coeffs)
+
+        noise_spectrums = list()
+        # 3. Generate noise & calculate RDWS
+        for _ in range(self.num_samples):
+            noise = np.random.normal(size=time_series_y.shape[0])
+            noise = self.scaler.fit_transform(noise.reshape(-1, 1))
+
+            noise_coeffs = pywt.wavedec(noise, self.wavelet, level=max_decompositions)
+            noise_spectrum = self.calculate_subsignal_spectrum(noise_coeffs)
+            noise_spectrums.append(noise_spectrum)
+
+        # 4. Calculate mean & variance of all RDWSs. Confidence interval = 95%
+        noise_mean = np.mean(noise_spectrums, axis=0)
+        noise_var = np.std(noise_spectrums, axis=0)
+        confidence_intvl = stats.norm.interval(self.confidence, loc=noise_mean,
+                                               scale=noise_var / np.sqrt(self.num_samples))
+        # 5. Compare the spectrum of the n levels with the confidence level
+        for level in range(len(signal_spectrum)):
+            if signal_spectrum[level] > confidence_intvl[1][level]:
+                return signal_coeffs[level]  # There is a trend
+        return None
+
+    @staticmethod
+    def calculate_subsignal_spectrum(decomposition_coefficients: List):
+        spectrum_values = list()
+        for subsignal in decomposition_coefficients:
+            spectrum_values.append(np.var(subsignal))
+        return spectrum_values
+
+
+if __name__ == '__main__':
+    x = np.arange(100)
+    noise = np.random.normal(loc=0, scale=5, size=100)
+    y = np.cos(22 / np.pi * x) + 6 * x
+    y = y + noise
+    plt.plot(y)
+    plt.show()
+    dws = DWS()
+    trend = dws.estimate_trend(x, x)
+    plt.plot(trend)
+    plt.show()
