@@ -62,18 +62,15 @@ class ITA(Method):
         first_half = first_half[sorted_indices[::-1]]
         second_half = second_half[sorted_indices[::-1]]
         second_half = second_half - first_half
-
         np.random.shuffle(second_half)
-        _, p_score1 = stats.ttest_1samp(second_half, 0.0)
-        _, p_score = ztest(second_half, value=0.0)  # comparing with no trend line mean
 
-        second_half = second_half + first_half
+        # comparing with no trend line mean
+        if second_half.shape[0] < 30:
+            _, p_score = stats.ttest_1samp(second_half, 0.0)
+        else:
+            _, p_score = ztest(second_half, value=0.0)
 
-        self._plot_ita(first_half=first_half, second_half=second_half,
-                       time_series_min=np.min(time_series_x),
-                       time_series_max=np.max(time_series_x))
-
-        trend = p_score > self.confidence_level
+        trend = p_score <= self.confidence_level
         return trend
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
