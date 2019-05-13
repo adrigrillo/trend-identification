@@ -14,14 +14,16 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import stats
+from statsmodels.stats.weightstats import ztest
 
 from src.methods.method import Method
 
 
 class ITA(Method):
-    def __init__(self, plot: bool = False, save_name: str = 'ita_result',
-                 save_path: str = '../../results/ita', save_format: str = 'png',
-                 file_id: str = None):
+    def __init__(self, confidence: float = 0.95, plot: bool = False,
+                 save_name: str = 'ita_result', save_path: str = '../../results/ita',
+                 save_format: str = 'png', file_id: str = None):
         """
         Instantiation method of the innovative trend analysis.
 
@@ -31,6 +33,7 @@ class ITA(Method):
         :param save_format: set the file format of the result
         :param file_id: parameter to set an special id to the generated file
         """
+        self.confidence_level = 1 - confidence
         self.plot = plot
         self.save_path = save_path
         self.save_format = save_format
@@ -50,11 +53,28 @@ class ITA(Method):
         first_half = np.sort(first_half)
         second_half = np.sort(second_half)
 
-        # TODO: implement a numeric method
+        self._plot_ita(first_half=first_half, second_half=second_half,
+                       time_series_min=np.min(time_series_x),
+                       time_series_max=np.max(time_series_x))
+
+        sorted_indices = first_half.argsort()
+
+        first_half = first_half[sorted_indices[::-1]]
+        second_half = second_half[sorted_indices[::-1]]
+        second_half = second_half - first_half
+
+        np.random.shuffle(second_half)
+        _, p_score1 = stats.ttest_1samp(second_half, 0.0)
+        _, p_score = ztest(second_half, value=0.0)  # comparing with no trend line mean
+
+        second_half = second_half + first_half
 
         self._plot_ita(first_half=first_half, second_half=second_half,
                        time_series_min=np.min(time_series_x),
                        time_series_max=np.max(time_series_x))
+
+        trend = p_score > self.confidence_level
+        return trend
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         """ Not valid for ITA """
@@ -74,8 +94,7 @@ class ITA(Method):
         :param time_series_min: minimum value of the time series
         :param time_series_max: maximum value of the time series
         """
-        plt.plot(first_half, second_half, label='data', color='red',
-                 linewidth='3', linestyle='dotted')
+        plt.scatter(first_half, second_half, label='data', color='red', s=2)
         plt.title('Innovative Trend Analysis')
         plt.xlabel('First half of the series')
         plt.xlim(time_series_min, time_series_max)
