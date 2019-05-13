@@ -30,11 +30,13 @@ class DWS(Method):
 
         # 2. Calculate DWS and spectrum value
         # TODO: this does not properly calculate the levels raise warning
-        # max_decompositions = int(np.floor(np.log2(len(time_series_y))))
-        max_decompositions = pywt.dwt_max_level(norm_time_series.shape[0], self.wavelet)
+        # max_level = int(np.floor(np.log2(len(time_series_y))))
+        max_level = pywt.dwt_max_level(norm_time_series.shape[0], self.wavelet)
 
-        signal_coeffs = pywt.wavedec(norm_time_series, self.wavelet, level=max_decompositions)
-        signal_spectrum = self.calculate_subsignal_spectrum(signal_coeffs)
+        signal_approximations = self._get_approximations(signal=norm_time_series,
+                                                         levels=max_level,
+                                                         wavelet=self.wavelet)
+        signal_spectrum = self._calculate_signal_spectrum(signal_approximations)
 
         noise_spectrums = list()
         # 3. Generate noise & calculate RDWS
@@ -42,8 +44,10 @@ class DWS(Method):
             noise = np.random.normal(size=time_series_y.shape[0])
             noise = self.scaler.fit_transform(noise.reshape(-1, 1))
 
-            noise_coeffs = pywt.wavedec(noise, self.wavelet, level=max_decompositions)
-            noise_spectrum = self.calculate_subsignal_spectrum(noise_coeffs)
+            noise_approximations = self._get_approximations(signal=noise,
+                                                            levels=max_level,
+                                                            wavelet=self.wavelet)
+            noise_spectrum = self._calculate_signal_spectrum(noise_approximations)
             noise_spectrums.append(noise_spectrum)
 
         # 4. Calculate mean & variance of all RDWSs. Confidence interval = 95%
@@ -52,16 +56,41 @@ class DWS(Method):
         confidence_intvl = stats.norm.interval(self.confidence, loc=noise_mean,
                                                scale=noise_var / np.sqrt(self.num_samples))
         # 5. Compare the spectrum of the n levels with the confidence level
-        for level in range(len(signal_spectrum)):
+        for level in range(max_level):
             if signal_spectrum[level] > confidence_intvl[1][level]:
-                return signal_coeffs[level]  # There is a trend
+                return signal_approximations[level]  # There is a trend
         return None
 
     @staticmethod
-    def calculate_subsignal_spectrum(decomposition_coefficients: List):
+    def _get_approximations(signal, levels: int, wavelet: str):
+        """
+        Method that perform the discrete wavelet decomposition the number of
+        levels indicated and saves all the approximation coefficient of the
+        levels.
+
+        :param signal: signal to decompose
+        :param levels: number of levels for the discrete wavelet transform
+        :param wavelet: name of the wavelet to be used
+        :return: list with the approximation coefficient of each level
+        """
+        signal_approximations = list()
+        for _ in range(levels):
+            signal, _ = pywt.dwt(signal, wavelet)
+            signal_approximations.append(signal)
+        return signal_approximations
+
+    @staticmethod
+    def _calculate_signal_spectrum(signals: List):
+        """
+        Method that calculates the spectrum value of the signals given
+        in a list.
+
+        :param signals: signals to calculate the spectrum values
+        :return: list with the spectrum values of each signal
+        """
         spectrum_values = list()
-        for subsignal in decomposition_coefficients:
-            spectrum_values.append(np.var(subsignal))
+        for signal in signals:
+            spectrum_values.append(np.var(signal))
         return spectrum_values
 
 
