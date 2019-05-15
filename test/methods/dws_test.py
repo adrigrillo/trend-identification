@@ -22,9 +22,9 @@ class TestDiscreteWaveletSpectrum(object):
         assert trend is None
 
     def test_detect_trend(self):
-        data_points = 1000
+        data_points = 100
         x = np.arange(0, data_points)
-        y = x
+        y = 1 / 10 * x ** 2
         noise = np.random.normal(loc=0, scale=200, size=data_points)
         signal = y + noise
 
@@ -43,6 +43,9 @@ class TestDiscreteWaveletSpectrum(object):
         data_points = 100
         x = np.arange(0, data_points)
         noise = np.random.normal(size=data_points)
+
+        plt.plot(noise)
+        plt.show()
 
         dws = DWS()
         trend = dws.estimate_trend(x, noise)
