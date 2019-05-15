@@ -19,8 +19,9 @@ class EmpiricalModeDecomposition(Method):
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         trend = self.estimate_trend(time_series_x, time_series_y)
 
-        plt.figure(figsize=(6, 2))
+        # plt.figure(figsize=(6, 2))
         plt.plot(trend)
         plt.xlabel('Time')
         plt.ylabel('Trend')
+        plt.title('Empirical Mode Decomposition')
         plt.show()
