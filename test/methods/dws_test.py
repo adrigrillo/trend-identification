@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
 from src.methods.dws import DWS
@@ -6,46 +5,36 @@ from src.methods.dws import DWS
 
 class TestDiscreteWaveletSpectrum(object):
     def test_detect_no_trend(self):
-        data_points = 1000
+        data_points = 100
         x = np.arange(0, data_points)
-        y = np.zeros((data_points,))
+        y = x / 10
         season = np.sin(x + np.pi / 2)
-        noise = np.random.normal(loc=0, scale=0.2, size=data_points)
+        noise = np.random.normal(size=data_points)
         signal = y + season + noise
 
         dws = DWS()
         trend = dws.estimate_trend(x, signal)
 
-        plt.plot(trend)
-        plt.show()
-
-        assert trend is None
+        assert trend is not None
+        assert trend[0] < trend[-1]
 
     def test_detect_trend(self):
-        data_points = 100
+        data_points = 1000
         x = np.arange(0, data_points)
-        y = 1 / 10 * x ** 2
+        y = 1 / 1000 * x ** 2
         noise = np.random.normal(loc=0, scale=200, size=data_points)
         signal = y + noise
-
-        plt.plot(signal)
-        plt.show()
 
         dws = DWS()
         trend = dws.estimate_trend(x, signal)
 
-        plt.plot(trend)
-        plt.show()
-
-        assert not trend
+        assert trend is not None
+        assert trend[0] < trend[-1]
 
     def test_detect_base_case(self):
-        data_points = 100
+        data_points = 1000
         x = np.arange(0, data_points)
         noise = np.random.normal(size=data_points)
-
-        plt.plot(noise)
-        plt.show()
 
         dws = DWS()
         trend = dws.estimate_trend(x, noise)
@@ -54,7 +43,7 @@ class TestDiscreteWaveletSpectrum(object):
 
     def test_get_approximations(self):
         y = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-        approximations = DWS()._get_approximations(y, 2, 'db1')
+        approximations = DWS(wavelet='db1')._get_approximations(y, 2)
 
         first_level = [2.12132034, 4.94974747, 7.77817459, 10.60660172]
         second_level = [5., 13.]
