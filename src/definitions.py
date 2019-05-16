@@ -34,4 +34,3 @@ CSV = '.csv'
 
 # This add the root, so the everything can be executed from the terminal
 sys.path.append(ROOT_DIR)
-print(sys.path)
