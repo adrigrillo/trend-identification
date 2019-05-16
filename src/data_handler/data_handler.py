@@ -61,14 +61,15 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
         seasonality_values = generate_seasonality(generation_params[SEASONALITY_DATA], data_points)
 
     # normalization:
-    #trend_values = scaler.fit_transform(trend_values.reshape(-1, 1))
-    #seasonality_values = scaler.fit_transform(seasonality_values.reshape(-1, 1))
-    #noise_values = scaler.fit_transform(noise_values.reshape(-1, 1))
+    trend_values = scaler.fit_transform(trend_values.reshape(-1, 1))
+    seasonality_values = scaler.fit_transform(seasonality_values.reshape(-1, 1))
+    noise_values = scaler.fit_transform(noise_values.reshape(-1, 1))
 
     y_values: np.ndarray = trend_values + seasonality_values + noise_values
-    #y_values = scaler.fit_transform(y_values.reshape(-1, 1))
+    y_values = scaler.fit_transform(y_values)
 
-    time_series = np.array([x_values, y_values, trend_values, seasonality_values, noise_values]).T
+    x_values = x_values.reshape(-1, 1)
+    time_series = np.hstack([x_values, y_values, trend_values, seasonality_values, noise_values])
 
     output_path = DATA_DIR + '/' + generation_params[SAVE_DATA][FILE_NAME]
     header = ['x', 'y', 'trend', 'seasonality', 'noise']
