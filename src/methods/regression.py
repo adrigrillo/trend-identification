@@ -1,12 +1,13 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from method import Method
+from src.methods.method import Method
 
 x = np.linspace(0, 500, num=1000)
 y = np.linspace(0, 500, num=1000)
 
 
-class regression(Method):
+class Regression(Method):
 
     def __init__(self,order: int=5):
         self.order=5
@@ -22,6 +23,15 @@ class regression(Method):
         model = LinearRegression().fit(data_complete, time_series_y)
         return model.coef_
 
+    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
+        trend = self.estimate_trend(time_series_x, time_series_y)
 
-m = regression().detect_trend(x, y)
-print(m.coef_)
+        plt.plot(trend)
+        plt.xlabel('Time')
+        plt.ylabel('Trend')
+        plt.title('Linear Regression')
+        plt.show()
+
+
+#m = regression().detect_trend(x, y)
+#print(m.coef_)

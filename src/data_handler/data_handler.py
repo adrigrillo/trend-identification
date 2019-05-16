@@ -21,11 +21,14 @@ import numpy as np
 import pandas as pd
 from pywt import downcoef
 from scipy.io import loadmat
+from sklearn.preprocessing import MinMaxScaler
 
 from src.definitions import *
 
 
 def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
+    scaler = MinMaxScaler(feature_range=(-1, 1))
+
     config_file_path = SYNTHETIC_DIR + '/' + config_file_name
 
     generation_params = configparser.ConfigParser(allow_no_value=True)
@@ -48,7 +51,7 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
         if x_values.shape[0] > data_points:
             x_values = np.take(x_values, np.arange(data_points))
     else:
-        raise ValueError('The configuration file does not contains any data to generate the trend.')
+        raise ValueError('The configuration file does not contain any data to generate the trend.')
 
     noise_values = np.zeros(data_points)
     if NOISE_DATA in sections:
@@ -57,7 +60,14 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
     if SEASONALITY_DATA in sections:
         seasonality_values = generate_seasonality(generation_params[SEASONALITY_DATA], data_points)
 
+    # normalization:
+    #trend_values = scaler.fit_transform(trend_values.reshape(-1, 1))
+    #seasonality_values = scaler.fit_transform(seasonality_values.reshape(-1, 1))
+    #noise_values = scaler.fit_transform(noise_values.reshape(-1, 1))
+
     y_values: np.ndarray = trend_values + seasonality_values + noise_values
+    #y_values = scaler.fit_transform(y_values.reshape(-1, 1))
+
     time_series = np.array([x_values, y_values, trend_values, seasonality_values, noise_values]).T
 
     output_path = DATA_DIR + '/' + generation_params[SAVE_DATA][FILE_NAME]
@@ -253,3 +263,13 @@ def data_squeezer(data: np.ndarray) -> np.ndarray:
     while len(data.shape) != 1:
         data = data.squeeze()
     return data
+
+
+def create_function_file(name: str, trend: str, data_points: int, mean: float, deviation: float, seasonality: str):
+    config = configparser.ConfigParser()
+    config['trend'] = {'function': trend, 'data_points': str(data_points)}
+    config['noise'] = {'mean': str(mean), 'deviation': str(deviation)}
+    config['seasonality'] = {'function': seasonality}
+    config['save'] = {'filename': name + '.csv'}
+    with open(SYNTHETIC_DIR + '/' + name + '.ini', 'w') as configfile:
+        config.write(configfile)
