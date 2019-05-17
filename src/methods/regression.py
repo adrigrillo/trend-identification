@@ -12,7 +12,7 @@ class Regression(Method):
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         raise NotImplementedError('This method is not valid for detecting a trend')
-    
+
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         data_complete = []
         for i in range((self.order + 1)):
