@@ -23,11 +23,11 @@ class TestGenerateSyntheticData(object):
 
         if Path(output_path).is_file():
             data = pd.read_csv(output_path)
-            read_x = np.array(data['x'], dtype=np.int).T
-            read_y = np.array(data['y']).T
-            read_trend = np.array(data['trend']).T
-            read_seasonality = np.array(data['seasonality']).T
-            read_noise = np.array(data['noise']).T
+            read_x = np.array(data['x'], dtype=np.int)
+            read_y = np.array(data['y'])
+            read_trend = np.array(data['trend'])
+            read_seasonality = np.array(data['seasonality'])
+            read_noise = np.array(data['noise'])
             np.testing.assert_equal(x, read_x)
             np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
             np.testing.assert_almost_equal(trend, read_trend)  # almost because of precision float
