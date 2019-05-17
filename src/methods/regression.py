@@ -25,18 +25,8 @@ class Regression(Method):
 
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         trend = self.estimate_trend(time_series_x, time_series_y)
-
-<<<<<<< HEAD
-m = regression().detect_trend(x, y)
-print(m.shape)
-=======
         plt.plot(trend)
         plt.xlabel('Time')
         plt.ylabel('Trend')
         plt.title('Linear Regression')
         plt.show()
-
-
-#m = regression().detect_trend(x, y)
-#print(m.coef_)
->>>>>>> 84ab8d505a3145ec88003f32c08cd1b6fb2928ae

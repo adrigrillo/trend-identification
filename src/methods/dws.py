@@ -4,6 +4,7 @@ import numpy as np
 import pywt
 from scipy import stats
 from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
 
 from src.methods.method import Method
 
@@ -46,7 +47,7 @@ class DWS(Method):
         # 2. Calculate DWS and spectrum value
         signal_spectrum = self._calculate_signal_spectrum(signal_approximations)
 
-        noise_spectrums = list()
+        noise_spectra = list()
         # 3. Generate noise & calculate RDWS
         for _ in range(self.num_samples):
             noise = np.random.normal(size=(time_series_y.shape[0], 1))
@@ -55,11 +56,11 @@ class DWS(Method):
             noise_approximations = self._get_approximations(noise, max_level)
             noise_spectrum = self._calculate_signal_spectrum(noise_approximations)
 
-            noise_spectrums.append(noise_spectrum)
+            noise_spectra.append(noise_spectrum)
 
         # 4. Calculate mean & variance of all RDWSs. Confidence interval = 95%
-        noise_mean = np.mean(noise_spectrums, axis=0)
-        noise_var = np.std(noise_spectrums, axis=0)
+        noise_mean = np.mean(noise_spectra, axis=0)
+        noise_var = np.std(noise_spectra, axis=0)
         confidence_intvl = stats.norm.interval(self.confidence, loc=noise_mean,
                                                scale=noise_var / np.sqrt(self.num_samples))
         # 5. Compare the spectrum of the n levels with the confidence level
@@ -116,3 +117,18 @@ class DWS(Method):
         for signal in signals:
             spectrum_values.append(np.var(signal))
         return spectrum_values
+
+
+data_points = 300
+x = np.arange(0, data_points)
+y = 1 / 300 * x ** 2
+noise = np.random.normal(loc=0, scale=200, size=data_points)
+signal = y + noise
+
+plt.plot(x, signal)
+plt.show()
+
+dws = DWS()
+trend = dws.estimate_trend(x, signal)
+plt.plot(x, trend)
+plt.show()
