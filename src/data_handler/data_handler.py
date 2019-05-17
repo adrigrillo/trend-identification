@@ -85,7 +85,7 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
     x_values = x_values.reshape(-1, 1)
     time_series = np.hstack([x_values, y_values, trend_values, seasonality_values, noise_values])
 
-    output_path = DATA_DIR + '/generated_data/' + generation_params[SAVE_DATA][FILE_NAME]
+    output_path = GENERATED_DIR + '/' + generation_params[SAVE_DATA][FILE_NAME]
     header = ['x', 'y', 'trend', 'seasonality', 'noise']
     pd.DataFrame(time_series).to_csv(output_path, header=header)
 
