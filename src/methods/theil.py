@@ -1,13 +1,13 @@
 import numpy as np
 from scipy import stats
-from method import Method
+from src.methods.method import Method
 
 
 x = np.linspace(0, 500, num=1000)
 y = np.linspace(0, 500, num=1000)
 
 
-class theil(Method):
+class Theil(Method):
 
     def __init__(self,confidence: float=0.9):
         self.confidence=confidence
@@ -19,5 +19,5 @@ class theil(Method):
         raise NotImplementedError('This method does not have the capability of estimating a trend')
 
 
-m = theil().detect_trend(x, y)
-print(m)
+#m = theil().detect_trend(x, y)
+#print(m)

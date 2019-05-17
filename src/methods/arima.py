@@ -10,6 +10,7 @@ y = x + np.sin(x)
 
 opt_order = None
 
+
 class Arima(Method):
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
@@ -46,5 +47,5 @@ class Arima(Method):
         return model_fit
 
 
-m = Arima().detect_trend(x, y)
-print(m.predict(start=5,end=999)-y[5:])
+#m = Arima().detect_trend(x, y)
+#print(m.predict(start=5,end=999)-y[5:])

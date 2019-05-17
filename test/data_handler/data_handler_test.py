@@ -23,11 +23,11 @@ class TestGenerateSyntheticData(object):
 
         if Path(output_path).is_file():
             data = pd.read_csv(output_path)
-            read_x = np.array(data['x'], dtype=np.int).T
-            read_y = np.array(data['y']).T
-            read_trend = np.array(data['trend']).T
-            read_seasonality = np.array(data['seasonality']).T
-            read_noise = np.array(data['noise']).T
+            read_x = np.array(data['x'], dtype=np.int)
+            read_y = np.array(data['y'])
+            read_trend = np.array(data['trend'])
+            read_seasonality = np.array(data['seasonality'])
+            read_noise = np.array(data['noise'])
             np.testing.assert_equal(x, read_x)
             np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
             np.testing.assert_almost_equal(trend, read_trend)  # almost because of precision float
@@ -147,26 +147,18 @@ class TestGenerateSyntheticData(object):
         configuration = obtain_config(config_file_name='test_csv.ini')
 
         np.random.seed(797)
-        noise = generate_noise(configuration[NOISE_DATA], data_points=data_points)
+        noise = generate_noise(configuration[NOISE_DATA], np.arange(data_points), data_points)
 
-        np.random.seed(797)
-        mean = int(configuration[NOISE_DATA][MEAN])
-        deviation = int(configuration[NOISE_DATA][DEVIATION])
-        test_noise = np.random.normal(mean, deviation, data_points)
-
-        assert len(noise) == data_points
-        np.testing.assert_almost_equal(noise, test_noise)
+        np.testing.assert_almost_equal(noise, np.zeros(data_points))
 
     def test_noise_generation_fail(self):
-        data_points = 100
-        configuration = obtain_config(config_file_name='test_csv.ini')
+        data_points = 5
+        configuration = obtain_config(config_file_name='test_csv_header.ini')
 
-        noise = generate_noise(configuration[NOISE_DATA], data_points=data_points)
+        np.random.seed(797)
+        noise = generate_noise(configuration[NOISE_DATA], np.arange(data_points), data_points)
 
-        mean = int(configuration[NOISE_DATA][MEAN])
-        deviation = int(configuration[NOISE_DATA][DEVIATION])
-        test_noise = np.random.normal(mean, deviation, data_points)
-
+        test_noise = np.array([2.70578832, -4.07251312, 8.32160285, 3.91816287, 3.8628272])
         assert len(noise) == data_points
         np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, noise, test_noise)
 
