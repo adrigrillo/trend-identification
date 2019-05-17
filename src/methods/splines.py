@@ -1,9 +1,6 @@
-
 """
 splines.py
 =================
-
-NOT FINISHED YET
 
 Source: https://www.analyticsvidhya.com/blog/2018/03/introduction-regression-splines-python-codes/
 
@@ -21,77 +18,79 @@ Parameters:
     Number of knots
 
 """
+from typing import Tuple
 
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
-
 from sklearn.model_selection import train_test_split
+# from sklearn.metrics import mean_squared_error
 from patsy import dmatrix
+# from math import sqrt
+from src.methods.method import Method
 
-from sklearn.metrics import mean_squared_error
-from math import sqrt
+# x = np.arange(0, 100)
+# y = np.arange(0, 100)
+# noise = np.random.normal(size=100)
+# signal = y + noise
+#
+# time_series_x = signal
+# time_series_y = y
 
-x = np.arange(0, 100)
-y = np.arange(0, 100)
-noise = np.random.normal(size=100)
-signal = y + noise
 
-data_x = x
-data_y = signal
+class Splines(Method):
 
-train_x, valid_x, train_y, valid_y = train_test_split(data_x, data_y, test_size=0.33, random_state = 1)
+    def __init__(self, knots: Tuple = (20,40,60,80), degree: int = 3):
+        """
+        :param
 
-# Generating cubic spline with 3 knots at 25, 40 and 60
-transformed_x = dmatrix("bs(train, knots=(25,40,60), degree=3, include_intercept=False)", {"train": train_x},return_type='dataframe')
+        """
+        self.degree = degree
+        self.knots = knots
 
-# Fitting Generalised linear model on transformed dataset
-fit1 = sm.GLM(train_y, transformed_x).fit()
 
-# Generating cubic spline with 4 knots
-transformed_x2 = dmatrix("bs(train, knots=(25,40,50,65),degree =3, include_intercept=False)", {"train": train_x}, return_type='dataframe')
+    def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
 
-# Fitting Generalised linear model on transformed dataset
-fit2 = sm.GLM(train_y, transformed_x2).fit()
+        # train_x, valid_x, train_y, valid_y = train_test_split(time_series_x, time_series_y, test_size = 0.33, random_state=1)
 
-# Predictions on both splines
-pred1 = fit1.predict(dmatrix("bs(valid, knots=(25,40,60), include_intercept=False)", {"valid": valid_x}, return_type='dataframe'))
-pred2 = fit2.predict(dmatrix("bs(valid, knots=(25,40,50,65),degree =3, include_intercept=False)", {"valid": valid_x}, return_type='dataframe'))
+        # Cubic spline generation (4 knots)
+        reshaped_x = dmatrix(f"bs(time_series, knots={self.knots}, degree = {self.degree}, include_intercept=False)",
+                             {"time_series": time_series_x}, return_type='dataframe')
 
-# Calculating RMSE values
-rms1 = sqrt(mean_squared_error(valid_y, pred1))
+        # Fitting Generalised linear model on transformed dataset
+        reg_fitting = sm.GLM(time_series_y, reshaped_x).fit()
 
-rms2 = sqrt(mean_squared_error(valid_y, pred2))
+        # Prediction on splines
+        trend = reg_fitting.predict(
+            dmatrix(f"bs(time_series, knots={self.knots}, degree = {self.degree}, include_intercept=False)",
+                    {"time_series": time_series_x},return_type='dataframe'))
 
-# We will plot the graph for 70 observations only
-xp = np.linspace(valid_x.min(),valid_x.max(),70)
-
-# Make some predictions
-pred1 = fit1.predict(dmatrix("bs(xp, knots=(25,40,60), include_intercept=False)", {"xp": xp}, return_type='dataframe'))
-pred2 = fit2.predict(dmatrix("bs(xp, knots=(25,40,50,65),degree =3, include_intercept=False)", {"xp": xp}, return_type='dataframe'))
-
+        return trend
 
 # Generating natural cubic spline
-transformed_x3 = dmatrix("cr(train,df = 3)", {"train": train_x}, return_type='dataframe')
-fit3 = sm.GLM(train_y, transformed_x3).fit()
+# transformed_x3 = dmatrix("cr(train,df = 3)", {"train": train_x}, return_type='dataframe')
+
+# fit3 = sm.GLM(train_y, transformed_x3).fit()
 
 # Prediction on validation set
-pred3 = fit3.predict(dmatrix("cr(valid, df=3)", {"valid": valid_x}, return_type='dataframe'))
-# Calculating RMSE value
-rms = sqrt(mean_squared_error(valid_y, pred3))
-print(rms)
+# pred3 = fit3.predict(dmatrix("cr(valid, df=3)", {"valid": valid_x}, return_type='dataframe'))
 
-# We will plot the graph for 70 observations only
-pred3 = fit3.predict(dmatrix("cr(xp, df=3)", {"xp": xp}, return_type='dataframe'))
+    def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
+        raise NotImplementedError('This method does not have the capability of detecting a trend')
 
-# Plot the splines and error bands
-plt.scatter(data_x, data_y, facecolor='None', edgecolor='k', alpha=0.1)
-plt.plot(xp, pred1, label='Specifying degree =3 with 3 knots')
-plt.plot(xp, pred2, color='r', label='Specifying degree =3 with 4 knots')
-plt.plot(xp, pred3,color='g', label='Natural spline')
-plt.legend()
-plt.xlim(15,85)
-plt.ylim(0,350)
-plt.xlabel('x')
-plt.ylabel('signal')
-plt.show()
+    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
+        trend = self.estimate_trend(time_series_x, time_series_y)
+        # print(trend.shape)
+        # Plot the splines and error bands
+        # plt.scatter(time_series_x,x time_series_y, facecolor='None', edgecolor='k', alpha=0.1)
+        plt.plot(time_series_x, trend, color='r', label=f'Specifying degree = {self.degree} with {self.knots} knots')
+        plt.legend()
+
+        plt.xlabel('Time')
+        plt.ylabel('Trend')
+        plt.title('Spline Regression')
+        plt.show()
+
+# plt.plot(time_series_x, pred3,color='g', label='Natural spline')
+# plt.xlim(15,85)
+# plt.ylim(0,350)
