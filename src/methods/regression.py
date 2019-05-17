@@ -2,8 +2,8 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from method import Method
 
-x = np.linspace(0, 500, num=1000)
-y = np.linspace(0, 500, num=1000)
+x = np.linspace(0, 500, num=100)
+y = np.linspace(0, 500, num=100)
 
 
 class regression(Method):
@@ -20,8 +20,8 @@ class regression(Method):
             data_complete.append(time_series_x ** i)
         data_complete = np.array(data_complete).T
         model = LinearRegression().fit(data_complete, time_series_y)
-        return model.coef_
+        return model.predict(data_complete)
 
 
 m = regression().detect_trend(x, y)
-print(m.coef_)
+print(m.shape)
