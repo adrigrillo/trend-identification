@@ -147,26 +147,18 @@ class TestGenerateSyntheticData(object):
         configuration = obtain_config(config_file_name='test_csv.ini')
 
         np.random.seed(797)
-        noise = generate_noise(configuration[NOISE_DATA], data_points=data_points)
+        noise = generate_noise(configuration[NOISE_DATA], np.arange(data_points), data_points)
 
-        np.random.seed(797)
-        mean = int(configuration[NOISE_DATA][MEAN])
-        deviation = int(configuration[NOISE_DATA][DEVIATION])
-        test_noise = np.random.normal(mean, deviation, data_points)
-
-        assert len(noise) == data_points
-        np.testing.assert_almost_equal(noise, test_noise)
+        np.testing.assert_almost_equal(noise, np.zeros(data_points))
 
     def test_noise_generation_fail(self):
-        data_points = 100
-        configuration = obtain_config(config_file_name='test_csv.ini')
+        data_points = 5
+        configuration = obtain_config(config_file_name='test_csv_header.ini')
 
-        noise = generate_noise(configuration[NOISE_DATA], data_points=data_points)
+        np.random.seed(797)
+        noise = generate_noise(configuration[NOISE_DATA], np.arange(data_points), data_points)
 
-        mean = int(configuration[NOISE_DATA][MEAN])
-        deviation = int(configuration[NOISE_DATA][DEVIATION])
-        test_noise = np.random.normal(mean, deviation, data_points)
-
+        test_noise = np.array([2.70578832, -4.07251312, 8.32160285, 3.91816287, 3.8628272])
         assert len(noise) == data_points
         np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, noise, test_noise)
 
