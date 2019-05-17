@@ -27,6 +27,21 @@ from src.definitions import *
 
 
 def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
+    """
+    Generate a time series from specified data in the .ini files. Check the
+    example .ini files to understand the structure.
+
+    This method allows two ways of creating synthetic data from a function,
+    that will be the trend, or from a previous time series, that is smoothed with
+    discrete wavelet transform. Then seasonality components and noise can be added
+    to the trend.
+
+    :param method: 'function' if the trend data comes from a function or 'data'
+    if it comes from a existing dataset.
+    :param config_file_name: name of the .ini file. Ex: 'test_func.ini'
+    :return: data for the generated time series, normalised. It returns
+    the x-axis data, the y-axis data, the trend data, the seasonality and the noise
+    """
     config_file_path = SYNTHETIC_DIR + '/' + config_file_name
 
     generation_params = configparser.ConfigParser(allow_no_value=True)
