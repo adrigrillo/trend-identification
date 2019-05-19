@@ -85,8 +85,6 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
         noise_values = MinMaxScaler((-1, 1)).fit_transform(noise_values.reshape(-1, 1)).squeeze()
 
     y_values: np.ndarray = trend_values + seasonality_values + noise_values
-    if not (y_values == zero_array).all():
-        y_values = MinMaxScaler((-1, 1)).fit_transform(y_values.reshape(-1, 1)).squeeze()
 
     time_series = np.array([x_values, y_values, trend_values, seasonality_values, noise_values]).T
 
