@@ -75,31 +75,24 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
         noise_values = generate_noise(generation_params[NOISE_DATA],
                                       trend_values + seasonality_values, data_points)
 
-    zero_array = np.zeros(shape=x_values)
+    zero_array = np.zeros(shape=x_values.shape)
 
     if not (trend_values == zero_array).all():
-        trend_values = MinMaxScaler(feature_range=(-1, 1)).fit_transform(trend_values.reshape(-1, 1))
+        trend_values = MinMaxScaler((-1, 1)).fit_transform(trend_values.reshape(-1, 1)).squeeze()
     if not (seasonality_values == zero_array).all():
-        seasonality_values = MinMaxScaler(feature_range=(-1, 1)).fit_transform(seasonality_values.reshape(-1, 1))
+        seasonality_values = MinMaxScaler((-1, 1)).fit_transform(seasonality_values.reshape(-1, 1)).squeeze()
     if not (noise_values == zero_array).all():
-        noise_values = MinMaxScaler(feature_range=(-1, 1)).fit_transform(noise_values.reshape(-1, 1))
+        noise_values = MinMaxScaler((-1, 1)).fit_transform(noise_values.reshape(-1, 1)).squeeze()
 
     y_values: np.ndarray = trend_values + seasonality_values + noise_values
     if not (y_values == zero_array).all():
-        y_values = MinMaxScaler(feature_range=(-1, 1)).fit_transform(y_values)
+        y_values = MinMaxScaler((-1, 1)).fit_transform(y_values).squeeze()
 
-    x_values = x_values.reshape(-1, 1)
-    time_series = np.hstack([x_values, y_values, trend_values, seasonality_values, noise_values])
+    time_series = np.array([x_values, y_values, trend_values, seasonality_values, noise_values])
 
     output_path = GENERATED_DIR + '/' + generation_params[SAVE_DATA][FILE_NAME]
     header = ['x', 'y', 'trend', 'seasonality', 'noise']
     pd.DataFrame(time_series).to_csv(output_path, header=header)
-
-    x_values = x_values.squeeze()
-    y_values = y_values.squeeze()
-    trend_values = trend_values.squeeze()
-    seasonality_values = seasonality_values.squeeze()
-    noise_values = noise_values.squeeze()
 
     return x_values, y_values, trend_values, seasonality_values, noise_values
 
