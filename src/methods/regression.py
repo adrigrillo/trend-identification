@@ -23,4 +23,4 @@ class Regression(Method):
         return model.predict(data_complete)
 
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        super().visualize_trend(time_series_x, time_series_y, 'Linear Regression')
+        super().visualize_trend(time_series_x, time_series_y, 'Least squares', 'Estimated trend')
