@@ -18,12 +18,12 @@ from src.methods.dws import DWS
 from src.data_handler import data_handler
 from src.data_handler.data_generator import generate_data
 
-#methods_detection = [ITA(), MannKendall(), Regression(), Theil()]
-methods_estimation = [EmpiricalModeDecomposition(), HPfilter(), Regression()]
+methods_detection = [ITA(), MannKendall(), Regression(), Theil()]
+methods_estimation = [DWS(), EmpiricalModeDecomposition(), HPfilter(), Regression()]
 
 
-#x_values, y_values, trend_values, seasonality_values, noise_values = data_handler.generate_synthetic_data('function', 'time_series_2.ini')
-#method = EmpiricalModeDecomposition()
+x_values, y_values, trend_values, seasonality_values, noise_values = data_handler.generate_synthetic_data('function', 'data.ini')
+method = EmpiricalModeDecomposition()
 
 # Estimate trends on generated data and save plots
 num_files = len([f for f in os.listdir(GENERATED_DIR)
@@ -47,11 +47,20 @@ for i in range(1, num_files + 1):
     plt.savefig(PLOTS_DIR + name + '.png')
     plt.close()
 
+path = '/data/generated_data'
+num_files = len([f for f in os.listdir(path)
+                if os.path.isfile(os.path.join(path, f))]) - 1
+xs = np.zeros(num_files)
+ys = np.zeros(num_files)
+
+#for i in num_files:
 
 #for method in methods_detection:
 #    method.detect_trend(x, y)
 
 
+#for method in methods_estimation:
+#    method.visualize_trend(x, y)
 
 
 

@@ -37,7 +37,7 @@ from src.methods.method import Method
 
 class HPfilter(Method):
 
-    def __init__(self, smoothing: int = 1600):
+    def __init__(self, smoothing: int = 129600):
         """
         Instantiation of the Hodrick-Prescott method.
 
@@ -59,14 +59,8 @@ class HPfilter(Method):
         :param time_series_y: value of the time series
         :return: the estimated cycle and trend data
         """
-        cycle, trend = sm.tsa.filters.hpfilter(time_series_y, 1600)
+        cycle, trend = sm.tsa.filters.hpfilter(time_series_y, self.smoothing)
         return trend
 
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        trend = self.estimate_trend(time_series_x, time_series_y)
-
-        plt.plot(trend)
-        plt.title('Hodrick–Prescott filter')
-        plt.xlabel('Time')
-        plt.ylabel('Trend')
-        plt.show()
+        super().visualize_trend(time_series_x, time_series_y, 'Hodrick–Prescott filter', 'Estimated trend')

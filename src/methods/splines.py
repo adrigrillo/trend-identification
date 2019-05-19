@@ -30,17 +30,21 @@ from src.methods.method import Method
 
 class Splines(Method):
 
-    def __init__(self, knots: Tuple = (20, 40, 60, 80), degree: int = 3):
+    def __init__(self, quantile: Tuple = (0.05, 0.3, 0.6 ,0.9), degree: int = 3):
         """
         :param knots: points of division of the series
         :param degree: degree of the polynomial in the regression
         """
+        self.quantile = quantile
         self.degree = degree
-        self.knots = knots
+        # self.knots = knots
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         # Cubic spline generation (4 knots)
-        reshaped_x = dmatrix(f"bs(time_series, knots={self.knots}, degree = {self.degree}, include_intercept=False)",
+        # Durrleman and Simon (1989) recommends (0.05,0.50,0.95) for natural splines
+        knots_array = np.quantile(time_series_x, self.quantile)
+        knots = tuple(np.around(knots_array))
+        reshaped_x = dmatrix(f"bs(time_series, knots = {knots}, degree = {self.degree}, include_intercept=False)",
                              {"time_series": time_series_x}, return_type='dataframe')
         # Fitting Generalised linear model on transformed dataset
         reg_fitting = sm.GLM(time_series_y, reshaped_x).fit()
@@ -52,12 +56,9 @@ class Splines(Method):
         trend = self.estimate_trend(time_series_x, time_series_y)
         return self.describe_trend_from_array(time_series_x, trend)
 
+
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        trend = self.estimate_trend(time_series_x, time_series_y)
-        plt.plot(time_series_x, time_series_y, color='b', label=f'Original data')
-        plt.plot(time_series_x, trend, color='r', label=f'Specifying degree = {self.degree} with {self.knots} knots')
-        plt.legend()
-        plt.xlabel('Time')
-        plt.ylabel('Values')
-        plt.title('Spline Regression')
-        plt.show()
+        knots_array = np.quantile(time_series_x, self.quantile)
+        knots = tuple(np.around(knots_array))
+        super().visualize_trend(time_series_x, time_series_y, 'Spline Regression'
+                                ,f'Spline degree = {self.degree} with {knots} knots')
