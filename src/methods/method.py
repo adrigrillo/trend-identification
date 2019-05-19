@@ -6,6 +6,7 @@ Abstract class that all the methods will import in order to have a generalized
 structure. Every method will implement their specific functionality.
 """
 import abc
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
@@ -64,7 +65,7 @@ class Method(abc.ABC):
                     return True, 'Decreasing'
         return False, 'No trend'
 
-    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray, title, label = None):
+    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray, title, label=None):
         trend = self.estimate_trend(time_series_x, time_series_y)
         plt.plot(time_series_x, time_series_y, color='b', label=f'Original data')
         plt.plot(time_series_x, trend, color='r', label=label)
@@ -74,10 +75,8 @@ class Method(abc.ABC):
         plt.title(title)
         plt.show()
 
-
-
     def distance_between_estimated_and_generated_trend(self, trend_values: np.ndarray, trend_estimation: np.ndarray):
 
-        dist = np.linalg.norm((trend_values-trend_estimation))
+        dist = np.linalg.norm((trend_values - trend_estimation))
 
         return dist
