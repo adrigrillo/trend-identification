@@ -13,17 +13,29 @@ from src.methods.arima import Arima
 from src.methods.ita import ITA
 from src.methods.mk import MannKendall
 from src.methods.regression import Regression
+from src.methods.splines import Splines
 from src.methods.theil import Theil
 from src.methods.dws import DWS
 from src.data_handler import data_handler
 from src.data_handler.data_generator import generate_data
 
 methods_detection = [ITA(), MannKendall(), Regression(), Theil()]
-methods_estimation = [DWS(), EmpiricalModeDecomposition(), HPfilter(), Regression()]
+methods_estimation = [DWS(), EmpiricalModeDecomposition(), HPfilter(), Regression(), Splines()]
 
 
 x_values, y_values, trend_values, seasonality_values, noise_values = data_handler.generate_synthetic_data('function', 'data.ini')
 method = EmpiricalModeDecomposition()
+
+# Generate a table with methods and the distance between generated and estimated trend
+# Plot the estimated trends with the data
+
+dist_list = []
+
+for method in methods_estimation:
+    trend = method.estimate_trend(x_values, y_values)
+    distance = method.distance_between_estimated_and_generated_trend(trend_values,trend)
+    dist_list.append((type(method).__name__, distance))
+    method.visualize_trend(x_values, y_values)
 
 # Estimate trends on generated data and save plots
 num_files = len([f for f in os.listdir(GENERATED_DIR)
@@ -52,6 +64,9 @@ num_files = len([f for f in os.listdir(path)
                 if os.path.isfile(os.path.join(path, f))]) - 1
 xs = np.zeros(num_files)
 ys = np.zeros(num_files)
+
+
+
 
 #for i in num_files:
 
