@@ -6,10 +6,39 @@ Tests for the data_handler.py methods.
 """
 import os
 
+import matplotlib.pyplot as plt
 import pytest
 
 from src.data_handler.data_handler import *
 from src.definitions import *
+
+
+def test_generation_by_function():
+    file_name = 'func.ini'
+    x, y, trend, seasonality, noise = generate_synthetic_data('function', file_name)
+
+    plt.plot(x, y)
+    plt.show()
+
+    configuration = obtain_config(config_file_name=file_name)
+    output_name = configuration[SAVE_DATA][FILE_NAME]
+    output_path = GENERATED_DIR + '/' + output_name
+
+    if Path(output_path).is_file():
+        data = pd.read_csv(output_path)
+        read_x = np.array(data['x'])
+        read_y = np.array(data['y'])
+        read_trend = np.array(data['trend'])
+        read_seasonality = np.array(data['seasonality'])
+        read_noise = np.array(data['noise'])
+        np.testing.assert_equal(x, read_x)
+        np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
+        np.testing.assert_almost_equal(trend, read_trend)  # almost because of precision float
+        np.testing.assert_almost_equal(seasonality, read_seasonality)  # almost because of precision float
+        np.testing.assert_almost_equal(noise, read_noise)  # almost because of precision float
+        os.remove(output_path)
+    else:
+        pytest.fail('The file was not written')
 
 
 class TestGenerateSyntheticData(object):
@@ -19,16 +48,16 @@ class TestGenerateSyntheticData(object):
 
         configuration = obtain_config(config_file_name=file_name)
         output_name = configuration[SAVE_DATA][FILE_NAME]
-        output_path = DATA_DIR + '/' + output_name
+        output_path = GENERATED_DIR + '/' + output_name
 
         if Path(output_path).is_file():
             data = pd.read_csv(output_path)
-            read_x = np.array(data['x'], dtype=np.int)
+            read_x = np.array(data['x'])
             read_y = np.array(data['y'])
             read_trend = np.array(data['trend'])
             read_seasonality = np.array(data['seasonality'])
             read_noise = np.array(data['noise'])
-            np.testing.assert_equal(x, read_x)
+            np.testing.assert_almost_equal(x, read_x)
             np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
             np.testing.assert_almost_equal(trend, read_trend)  # almost because of precision float
             np.testing.assert_almost_equal(seasonality, read_seasonality)  # almost because of precision float
@@ -43,7 +72,7 @@ class TestGenerateSyntheticData(object):
 
         configuration = obtain_config(config_file_name=file_name)
         output_name = configuration[SAVE_DATA][FILE_NAME]
-        output_path = DATA_DIR + '/' + output_name
+        output_path = GENERATED_DIR + '/' + output_name
 
         if Path(output_path).is_file():
             data = pd.read_csv(output_path)
@@ -67,7 +96,7 @@ class TestGenerateSyntheticData(object):
 
         configuration = obtain_config(config_file_name=file_name)
         output_name = configuration[SAVE_DATA][FILE_NAME]
-        output_path = DATA_DIR + '/' + output_name
+        output_path = GENERATED_DIR + '/' + output_name
 
         if Path(output_path).is_file():
             data = pd.read_csv(output_path)
@@ -115,7 +144,7 @@ class TestGenerateSyntheticData(object):
         x, y = generate_trend(configuration[TREND_DATA])
 
         data_points = int(configuration[TREND_DATA][DATA_PTS])
-        x_test = np.arange(data_points)
+        x_test = np.linspace(0, 1, data_points)
         y_test = np.array((1 / 5 * x_test) ** 2 - x_test)
 
         assert x.shape[0] == data_points

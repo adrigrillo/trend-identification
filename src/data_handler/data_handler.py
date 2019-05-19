@@ -21,7 +21,6 @@ import numpy as np
 import pandas as pd
 from pywt import downcoef
 from scipy.io import loadmat
-from sklearn.preprocessing import MinMaxScaler
 
 from src.definitions import *
 
@@ -75,17 +74,7 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
         noise_values = generate_noise(generation_params[NOISE_DATA],
                                       trend_values + seasonality_values, data_points)
 
-    zero_array = np.zeros(shape=x_values.shape)
-
-    if not (trend_values == zero_array).all():
-        trend_values = MinMaxScaler((-1, 1)).fit_transform(trend_values.reshape(-1, 1)).squeeze()
-    if not (seasonality_values == zero_array).all():
-        seasonality_values = MinMaxScaler((-1, 1)).fit_transform(seasonality_values.reshape(-1, 1)).squeeze()
-    if not (noise_values == zero_array).all():
-        noise_values = MinMaxScaler((-1, 1)).fit_transform(noise_values.reshape(-1, 1)).squeeze()
-
     y_values: np.ndarray = trend_values + seasonality_values + noise_values
-
     time_series = np.array([x_values, y_values, trend_values, seasonality_values, noise_values]).T
 
     output_path = GENERATED_DIR + '/' + generation_params[SAVE_DATA][FILE_NAME]
@@ -187,7 +176,7 @@ def generate_trend(trend_params: configparser.ConfigParser) -> Tuple[np.ndarray,
     """
     function = trend_params[FUNC]
     data_points = int(trend_params[DATA_PTS])
-    x = np.arange(data_points)
+    x = np.linspace(0, 1, data_points)
     y = eval(function)
     return x, np.array(y)
 
