@@ -11,7 +11,8 @@ class Regression(Method):
         self.order = order
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        raise NotImplementedError('This method is not valid for detecting a trend')
+        trend = self.estimate_trend(time_series_x, time_series_y)
+        self.describe_trend_from_array(time_series_x, trend)
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         data_complete = []

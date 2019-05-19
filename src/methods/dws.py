@@ -23,7 +23,8 @@ class DWS(Method):
         self.noise_scaler = MinMaxScaler(feature_range=(-1, 1))
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        raise NotImplementedError
+        trend = self.estimate_trend(time_series_x, time_series_y)
+        return self.describe_trend_from_array(time_series_x, trend)
 
     def estimate_trend(self, time_series_x: np.ndarray,
                        time_series_y: np.ndarray) -> Optional[np.ndarray]:

@@ -14,7 +14,8 @@ class EmpiricalModeDecomposition(Method):
         return imfs[-1]
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        raise NotImplementedError('This method does not have the capability of detecting a trend')
+        trend = self.estimate_trend(time_series_x, time_series_y)
+        return self.describe_trend_from_array(time_series_x, trend)
 
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         trend = self.estimate_trend(time_series_x, time_series_y)
