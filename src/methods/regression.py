@@ -23,10 +23,4 @@ class Regression(Method):
         return model.predict(data_complete)
 
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        trend = self.estimate_trend(time_series_x, time_series_y)
-        plt.plot(time_series_y)
-        plt.plot(trend)
-        plt.xlabel('Time')
-        plt.ylabel('Trend')
-        plt.title('Linear Regression')
-        plt.show()
+        super().visualize_trend(time_series_x, time_series_y, 'Linear Regression')

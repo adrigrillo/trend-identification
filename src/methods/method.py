@@ -6,7 +6,7 @@ Abstract class that all the methods will import in order to have a generalized
 structure. Every method will implement their specific functionality.
 """
 import abc
-
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
 
@@ -63,3 +63,14 @@ class Method(abc.ABC):
                 elif slope < 0.:
                     return True, 'Decreasing'
         return False, 'No trend'
+
+
+    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray, title, label = None):
+        trend = self.estimate_trend(time_series_x, time_series_y)
+        plt.plot(time_series_x, time_series_y, color='b', label=f'Original data')
+        plt.plot(time_series_x, trend, color='r', label=label)
+        plt.legend()
+        plt.xlabel('Time')
+        plt.ylabel('Values')
+        plt.title(title)
+        plt.show()
