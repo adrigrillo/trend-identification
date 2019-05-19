@@ -58,7 +58,7 @@ class Splines(Method):
 
 
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        knots_array = np.quantile(time_series_x, (0.05, 0.50, 0.9))
+        knots_array = np.quantile(time_series_x, self.quantile)
         knots = tuple(np.around(knots_array))
         super().visualize_trend(time_series_x, time_series_y, 'Spline Regression'
                                 ,f'Spline degree = {self.degree} with {knots} knots')
