@@ -30,11 +30,3 @@ class Regression(Method):
         plt.ylabel('Trend')
         plt.title('Linear Regression')
         plt.show()
-
-
-if __name__ == '__main__':
-    x = np.linspace(0, 500, num=100)
-    y = np.linspace(0, 500, num=100)
-    noise = np.random.normal(scale=50, size=100)
-    reg = Regression()
-    reg.visualize_trend(x, y + noise)

@@ -31,7 +31,7 @@ class Method(abc.ABC):
 
         :param time_series_x: time variable of the time series
         :param time_series_y: value of the time series
-        :return: method specific data about the trend in the time series
+        :return: array with the trend data
         """
         raise NotImplementedError('This method does not have the capability of estimating a trend')
 

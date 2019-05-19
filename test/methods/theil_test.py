@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.methods.splines import Splines
+from src.methods.theil import Theil
 
 
 def test_base_case():
@@ -9,7 +9,7 @@ def test_base_case():
     noise = np.random.normal(scale=10, size=100)
     signal = y + noise
 
-    splines = Splines()
-    trend = splines.estimate_trend(x, signal)
+    theil = Theil()
+    trend = theil.estimate_trend(x, signal)
 
     assert signal.shape[0] == trend.shape[0]
