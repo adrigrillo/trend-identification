@@ -119,17 +119,16 @@ class DWS(Method):
             spectrum_values.append(np.var(signal))
         return spectrum_values
 
-
-data_points = 300
-x = np.arange(0, data_points)
-y = 1 / 300 * x ** 2
-noise = np.random.normal(loc=0, scale=200, size=data_points)
-signal = y + noise
-
-plt.plot(x, signal)
-plt.show()
-
-dws = DWS()
-trend = dws.estimate_trend(x, signal)
-plt.plot(x, trend)
-plt.show()
+# data_points = 300
+# x = np.arange(0, data_points)
+# y = 1 / 300 * x ** 2
+# noise = np.random.normal(loc=0, scale=200, size=data_points)
+# signal = y + noise
+#
+# plt.plot(x, signal)
+# plt.show()
+#
+# dws = DWS()
+# trend = dws.estimate_trend(x, signal)
+# plt.plot(x, trend)
+# plt.show()

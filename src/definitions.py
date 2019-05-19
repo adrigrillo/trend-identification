@@ -7,6 +7,7 @@ ROOT_DIR = dirname(SOURCE_DIR)
 DATA_DIR = ROOT_DIR + '/data'
 SYNTHETIC_DIR = DATA_DIR + '/synthetic'
 GENERATED_DIR = DATA_DIR + '/generated_data'
+PLOTS_DIR = DATA_DIR + '/plots_estimation'
 
 # Name definitions for the data handler
 
