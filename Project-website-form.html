@@ -55,6 +55,7 @@ There are multiple ways to take apart time series recordings. However, none of t
 </p>
 
 <h4>Methods</h4>
+<p>
 A lot of methods are able to detect or approximate a trend, but these methods perform differently depending on the influences of the trend, the seasonal component and the noise.
 
 Mostly common methods, such as regression, are covered with a couple more complex methods.
@@ -63,8 +64,11 @@ An overview and a brief description of them can be found in the report.
 
 All of the methods are applied to each trend individually. This allows determining the best method for a trend type.
 These results are compared to find either the best overall method or a group of trends where specific methods perform well.
-
-An example of this analysis can be found on Fig 3 and Fig 4, 
+</p>
+<p>
+An example analysis of the estimation methods on two different trends can be found in Fig 3 and Fig 4, in the bar chart on the right the distance to the original trend is measured, so the smaller the value, the better the performance.
+ On the mixed polynomial trend most methods perform very well, but the Theil-Sen estimator performs very bad. While on the monotonic trend all methods performs comparable except for the discrete wavelet spectrum which performs worse. 
+</p>
 
 <figure><img style="text-align: center;" src="website/methods_1.png" alt="" height="300"/>
 <figcaption>Fig 3. - Performance analysis on mixed polynomial trend
