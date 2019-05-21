@@ -20,60 +20,63 @@ Semester: 2018-2019
 
 <h4>Background</h4>
 This project should help to analyse time series data, which is  a special type of data with a time-value, such as seconds or timestamp, as x-value and any observed value as y-value.
-For example the y-value can be a measured value like temperature or stock exchange data.
-In a mathematical sense, data has several components. 
-One component is the so-called noise, which describes random events or measurement errors. 
-Another component is the season, for example for weather data the different time of the year. So in general the season component describes repetitive behaviour during the observation period. Furthermore, 
-data can contain a trend, which describe how the data will develop beyond the measuring period.
+The y-value can then be a measured value like temperature or stock exchange data.
+In a mathematical sense this kind of data consists of several components. 
+One component is the so-called noise which describes random events or measurement errors. 
+Another component is the season, such as time of year in weather data. In general the season component describes repetitive behaviour during the observation period. Furthermore, data can contain a trend, which describes how the data will develop beyond the measurement period.
 In Fig. 1 a synthetic time series data was generated with these three different components, a trend, random noise and seasonality. 
 </p>
 
 <p>
-A main topic of this project is to identify trends, this identification can be split in two parts. 
-The first part is the identification, which means to find out if a trend exists in the data, while the second part is to estimate this trend.
-An estimation of a trend can be an equation like <i>x+5</i> or just a list of points, this depends on the method that is used.
+A main topic of this project is to find trends, which can be split in two parts. 
+The first part is the identification, which means finding out if a trend exists, while the second part is to estimate this trend.
+An estimation of a trend can be an equation like <i>x+5</i> or just a list of points. This depends on the method that is used.
 
-Trends can have different shapes such as just a straight line that goes up or down or more complex curves like simple polynomials.
+Trends can have different shapes such as just a straight increasing or decreasing line or more complex curves like simple polynomials.
 An overview about the considered types of trend can be found in Fig 2.
 
-In this context of trend, different types of trends exist
-Different methods can either identify or estimate a trend or do both. 
+Different methods can either identify or estimate a trend, or do both. 
 </p>
 
 
 <figure><img style="text-align: center;" src="website/Rplot.png" alt="" height="300"/>
-    <figcaption>Fig 3. - Performance analysis on monotonic trend
+    <figcaption>Fig 2. - Performance analysis on monotonic trend
     </figcaption>
     </figure>
 
 
 
-<h4>Problem statement and motivation:</h4>
+<h4>Problem statement and motivation</h4>
 <p>
 It is very useful to separate the trend and season from the time series. For instance, scientists investigating global warming are interested in the overall changes, or trend, in temperature and not so much in the seasonal changes. Another example application is medicine, where electrocardiograms suffer from patient's breathing and baseline wander, that cause the heartbeats to be shifted away. There it is more useful to consider the series without the long-term changes. The quality of the separation for each component allows easier analysis on the time series.
+</p>
+<p>
 There are multiple ways to take apart time series recordings. However, none of them are considered the standard way and little research exists to compare the methods for different types of time series. Our goal is to systematically compare the different approaches to find the best one or to be able to give the best method for specific type of time series.
 </p>
 
 <h4>Methods</h4>
-A lot of methods are able to detect or approximate a trend, but these methods perform differently depending on the trend, the influence of the seasonal component and the noise.
-The methods that are covered are mostly common methods, like regression, but some more complex methods are covered as well.
-An overview and a brief description can be found in the report.
-To be able to generalise the analysis of a trend all considered methods are applied to different types of trend and the results are analysed.
+A lot of methods are able to detect or approximate a trend, but these methods perform differently depending on the influences of the trend, the seasonal component and the noise.
 
+Mostly common methods, such as regression, are covered with a couple more complex methods.
 
-An example of this analysis can be found on Fig ? and Fig ?, 
+An overview and a brief description of them can be found in the report.
+
+All of the methods are applied to each trend individually. This allows determining the best method for a trend type.
+These results are compared to find either the best overall method or a group of trends where specific methods perform well.
+
+An example of this analysis can be found on Fig 3 and Fig 4, 
 
 <figure><img style="text-align: center;" src="website/methods_1.png" alt="" height="300"/>
-<figcaption>Fig 2. - Performance analysis on mixed polynomial trend
+<figcaption>Fig 3. - Performance analysis on mixed polynomial trend
 </figcaption>
 </figure>
 
 <figure><img style="text-align: center;" src="website/methods_2.png" alt="" height="300"/>
-<figcaption>Fig 3. - Performance analysis on monotonic trend
+<figcaption>Fig 4. - Performance analysis on monotonic trend
 </figcaption>
 </figure>
 
-<h4>Research questions/hypotheses:</h4>
+<h4>Research questions</h4>
 <ul>
 <li>What are the best and most versatile approaches for trend identification and estimation in time series data?</li>
 <li>What are the strengths and weak points of the different methods tested?</li>
@@ -82,12 +85,9 @@ An example of this analysis can be found on Fig ? and Fig ?,
 
 
 
-<h4>Main outcomes:</h4>
-Comparisation of strengths and weeknesses of different methods for trend detection and estimation
+<h4>Main outcome</h4>
+The research results in the comparison of strengths and weeknesses of different methods for trend detection and estimation.
 
-
-<h4>References:</h4>
-Kitano, H., Asada, M., Kuniyoshi, Y., Noda, I., &amp; Osawa, E. (1997). Robocup: the robot world cup initiative. Proceedings of the first international conference on Autonomous agents, 340-347.
 
 <h4>Downloads:</h4>
 <a href=”???” target=”_blank”>Final report</a>
