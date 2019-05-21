@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
@@ -12,7 +11,7 @@ class Regression(Method):
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         trend = self.estimate_trend(time_series_x, time_series_y)
-        self.describe_trend_from_array(time_series_x, trend)
+        return self.describe_trend_from_array(time_series_x, trend)
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         data_complete = []

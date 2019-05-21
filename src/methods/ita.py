@@ -17,12 +17,13 @@ import numpy as np
 from scipy.stats import stats
 from statsmodels.stats.weightstats import ztest
 
+from src.definitions import RESULTS_DIR
 from src.methods.method import Method
 
 
 class ITA(Method):
     def __init__(self, confidence: float = 0.95, plot: bool = False,
-                 save_name: str = 'ita_result', save_path: str = '../../results/ita',
+                 save_name: str = 'ita_result', save_path: str = RESULTS_DIR + '/',
                  save_format: str = 'png', file_id: str = None):
         """
         Instantiation method of the innovative trend analysis.
@@ -54,8 +55,8 @@ class ITA(Method):
         second_half = np.sort(second_half)
 
         self._plot_ita(first_half=first_half, second_half=second_half,
-                       time_series_min=np.min(time_series_x),
-                       time_series_max=np.max(time_series_x))
+                       time_series_min=np.min(time_series_y),
+                       time_series_max=np.max(time_series_y))
 
         sorted_indices = first_half.argsort()
 
@@ -71,7 +72,7 @@ class ITA(Method):
             _, p_score = ztest(second_half, value=0.0)
 
         trend = p_score <= self.confidence_level
-        return trend
+        return trend,
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         """ Not valid for ITA """
@@ -91,6 +92,7 @@ class ITA(Method):
         :param time_series_min: minimum value of the time series
         :param time_series_max: maximum value of the time series
         """
+        plt.figure()
         plt.scatter(first_half, second_half, label='data', color='red', s=2)
         plt.title('Innovative Trend Analysis')
         plt.xlabel('First half of the series')
@@ -105,7 +107,7 @@ class ITA(Method):
         plt.legend()
         # Save file with timestamp of the execution
         time = datetime.now()
-        timestamp = '{0}-{1}-{2}'.format(str(time.hour), str(time.minute), str(time.second))
+        timestamp = '{0}-{1}-{2}-{3}'.format(str(time.hour), str(time.minute), str(time.second), str(time.microsecond))
         if self.file_id is not None:
             file_id = "{0}_{1}".format(self.file_id, timestamp)
         else:
@@ -113,3 +115,4 @@ class ITA(Method):
         plt.savefig("{0}/{1}_{2}.{3}".format(self.save_path, self.save_name, file_id, self.save_format))
         if self.plot:
             plt.show()
+        plt.close()
