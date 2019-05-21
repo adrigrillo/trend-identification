@@ -13,18 +13,17 @@ Supervisor(s): Bonizzi, P.
 Semester: 2018-2019
 
 <figure><img style="float: left; padding-right: 20px;"
-    src="website/example_trend_season.png" alt="" width="458" height="300" />
+    src="website/Components.png" alt="" width="458" height="300" />
     <figcaption>Fig 1. - How a trend can affect the interpretation
     </figcaption>
     </figure>
 
 <h4>Background</h4>
-<p>
 This project should help to analyse time series data, which is  a special type of data with a time-value, such as seconds or timestamp, as x-value and any observed value as y-value.
-For example the y-value can be a measured value like temperature or e.g. stock exchange data.
+For example the y-value can be a measured value like temperature or stock exchange data.
 In a mathematical sense, data has several components. 
-One component is the so-called noise, which describes, among other, random events or measurement errors. 
-Another component is the Season component, for example for weather data, the different season, so in general the season component describe repetitive behaviour during the observation. Furthermore, 
+One component is the so-called noise, which describes random events or measurement errors. 
+Another component is the season, for example for weather data the different time of the year. So in general the season component describes repetitive behaviour during the observation period. Furthermore, 
 data can contain a trend, which describe how the data will develop beyond the measuring period.
 In Fig. 1 a synthetic time series data was generated with these three different components, a trend, random noise and seasonality. 
 </p>
@@ -42,15 +41,18 @@ Different methods can either identify or estimate a trend or do both.
 </p>
 
 
+<figure><img style="text-align: center;" src="website/Rplot.png" alt="" height="300"/>
+    <figcaption>Fig 3. - Performance analysis on monotonic trend
+    </figcaption>
+    </figure>
 
 
 
 <h4>Problem statement and motivation:</h4>
-after removal a better view e.g. on season
-so because influence the analysis
-different fields with very specific solutions
-ecg as an 'real world' example
-no automatisation
+<p>
+It is very useful to separate the trend and season from the time series. For instance, scientists investigating global warming are interested in the overall changes, or trend, in temperature and not so much in the seasonal changes. Another example application is medicine, where electrocardiograms suffer from patient's breathing and baseline wander, that cause the heartbeats to be shifted away. There it is more useful to consider the series without the long-term changes. The quality of the separation for each component allows easier analysis on the time series.
+There are multiple ways to take apart time series recordings. However, none of them are considered the standard way and little research exists to compare the methods for different types of time series. Our goal is to systematically compare the different approaches to find the best one or to be able to give the best method for specific type of time series.
+</p>
 
 <h4>Methods</h4>
 A lot of methods are able to detect or approximate a trend, but these methods perform differently depending on the trend, the influence of the seasonal component and the noise.
@@ -58,7 +60,6 @@ The methods that are covered are mostly common methods, like regression, but som
 An overview and a brief description can be found in the report.
 To be able to generalise the analysis of a trend all considered methods are applied to different types of trend and the results are analysed.
 
-In Fig ? and Fig ? and example analysis is presented. The Theil-Sen estimator performs very bad on the first trend but it is much better on the second.
 
 An example of this analysis can be found on Fig ? and Fig ?, 
 
