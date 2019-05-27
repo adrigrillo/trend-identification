@@ -67,10 +67,6 @@ class ITA(Method):
         else:
             _, p_score = ztest(second_half, value=0.0)
 
-        self._plot_ita(first_half=first_half, second_half=second_half+first_half,
-                       time_series_min=np.min(time_series_y),
-                       time_series_max=np.max(time_series_y))
-
         trend = p_score <= self.confidence_level
         return trend,
 
