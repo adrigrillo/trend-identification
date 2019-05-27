@@ -58,10 +58,6 @@ class ITA(Method):
                        time_series_min=np.min(time_series_y),
                        time_series_max=np.max(time_series_y))
 
-        sorted_indices = first_half.argsort()
-
-        first_half = first_half[sorted_indices[::-1]]
-        second_half = second_half[sorted_indices[::-1]]
         second_half = second_half - first_half
         np.random.shuffle(second_half)
 
@@ -70,6 +66,10 @@ class ITA(Method):
             _, p_score = stats.ttest_1samp(second_half, 0.0)
         else:
             _, p_score = ztest(second_half, value=0.0)
+
+        self._plot_ita(first_half=first_half, second_half=second_half+first_half,
+                       time_series_min=np.min(time_series_y),
+                       time_series_max=np.max(time_series_y))
 
         trend = p_score <= self.confidence_level
         return trend,
