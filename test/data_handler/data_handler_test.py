@@ -6,39 +6,10 @@ Tests for the data_handler.py methods.
 """
 import os
 
-import matplotlib.pyplot as plt
 import pytest
 
 from src.data_handler.data_handler import *
 from src.definitions import *
-
-
-def test_generation_by_function():
-    file_name = 'func.ini'
-    x, y, trend, seasonality, noise = generate_synthetic_data('function', file_name)
-
-    plt.plot(x, y)
-    plt.show()
-
-    configuration = obtain_config(config_file_name=file_name)
-    output_name = configuration[SAVE_DATA][FILE_NAME]
-    output_path = GENERATED_DIR + '/' + output_name
-
-    if Path(output_path).is_file():
-        data = pd.read_csv(output_path)
-        read_x = np.array(data['x'])
-        read_y = np.array(data['y'])
-        read_trend = np.array(data['trend'])
-        read_seasonality = np.array(data['seasonality'])
-        read_noise = np.array(data['noise'])
-        np.testing.assert_equal(x, read_x)
-        np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
-        np.testing.assert_almost_equal(trend, read_trend)  # almost because of precision float
-        np.testing.assert_almost_equal(seasonality, read_seasonality)  # almost because of precision float
-        np.testing.assert_almost_equal(noise, read_noise)  # almost because of precision float
-        os.remove(output_path)
-    else:
-        pytest.fail('The file was not written')
 
 
 class TestGenerateSyntheticData(object):
@@ -160,16 +131,6 @@ class TestGenerateSyntheticData(object):
         y_values = smooth_for_trend(signal, configuration)
 
         assert y_values.shape[0] == int(configuration[DATA_PTS])
-
-    def test_function_smoothing_error_short(self):
-        file_name = 'test_mat.ini'
-        configuration = obtain_config(config_file_name=file_name)[FILE_DATA]
-
-        path = DATA_DIR + '/' + configuration[FILE_NAME]
-        signal = data_squeezer(loadmat(path)[configuration[Y_COL]])
-
-        with pytest.raises(ValueError):
-            smooth_for_trend(signal[:500], configuration)
 
     def test_noise_generation(self):
         data_points = 100

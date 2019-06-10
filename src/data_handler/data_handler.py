@@ -19,6 +19,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
+import pywt
 from pywt import downcoef
 from scipy.io import loadmat
 
@@ -57,6 +58,8 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
             file_params = generation_params[FILE_DATA]
             x_values, trend_values = file_loader(file_params)
             trend_values = smooth_for_trend(trend_values, file_params)
+            # Set x between 0 and 1 after getting the trend with desired length
+            x_values = np.linspace(0, 1, trend_values.shape[0])
         else:
             raise AttributeError('The method {0} does not match with any valid option (func or data).'.format(method))
         data_points = trend_values.shape[0]
@@ -257,15 +260,35 @@ def smooth_for_trend(y_values: np.ndarray, smooth_params: configparser.ConfigPar
     levels = int(smooth_params[LEVELS])
     data_points = int(smooth_params[DATA_PTS])
 
-    for i in range(levels):
+    # Decompose getting only the details
+    for _ in range(levels):
         y_values = downcoef(part='a', data=y_values, wavelet=wavelet)
-        if y_values.shape[0] - y_values.shape[0] // 2 < data_points:
-            break
+
+    for _ in range(levels):
+        details = np.zeros(y_values.shape)
+        y_values = pywt.idwt(y_values, details, wavelet=wavelet)
 
     if y_values.shape[0] > data_points:
         return y_values[:data_points]
     else:
         raise ValueError('The original time series is to short to perform this operation')
+
+def reconstruct_trend(self, trend_approx: np.ndarray, levels: int) -> np.ndarray:
+    """
+    Method that reconstructs the time series trend from its approximation.
+
+    All the details coefficients are set to 0 to only reconstruct the
+    trend.
+
+    :param trend_approx: approximation of the trend
+    :param levels: number of decomposition made in the original time series
+    :return: reconstructed trend of the time series
+    """
+    for _ in range(levels):
+        details = np.zeros(trend_approx.shape)
+        trend_approx = pywt.idwt(trend_approx, details, self.wavelet)
+    trend = self.series_scaler.inverse_transform(trend_approx.reshape(-1, 1))
+    return trend.squeeze()
 
 
 def data_squeezer(data: np.ndarray) -> np.ndarray:

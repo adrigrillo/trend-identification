@@ -4,7 +4,6 @@ import numpy as np
 import pywt
 from scipy import stats
 from sklearn.preprocessing import MinMaxScaler
-import matplotlib.pyplot as plt
 
 from src.methods.method import Method
 
@@ -121,17 +120,3 @@ class DWS(Method):
 
     def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         super().visualize_trend(time_series_x, time_series_y, 'Discrete Wavelet Spectrum', 'Estimated trend')
-
-# data_points = 300
-# x = np.arange(0, data_points)
-# y = 1 / 300 * x ** 2
-# noise = np.random.normal(loc=0, scale=200, size=data_points)
-# signal = y + noise
-#
-# plt.plot(x, signal)
-# plt.show()
-#
-# dws = DWS()
-# trend = dws.estimate_trend(x, signal)
-# plt.plot(x, trend)
-# plt.show()
