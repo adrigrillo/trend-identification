@@ -16,7 +16,7 @@ class Lowess(Method):
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
 
         # Parametric search?
-        estimate = lowess(y,x,return_sorted=False)
+        estimate = lowess(time_series_y,time_series_x,return_sorted=False)
 
         return estimate
 
