@@ -20,7 +20,6 @@ Parameters:
 """
 from typing import Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
 from patsy.highlevel import dmatrix
@@ -35,6 +34,7 @@ class Splines(Method):
         :param knots: points of division of the series
         :param degree: degree of the polynomial in the regression
         """
+        self.name = 'Splines'
         self.quantile = quantile
         self.degree = degree
         # self.knots = knots
@@ -60,4 +60,4 @@ class Splines(Method):
         knots_array = np.quantile(time_series_x, self.quantile)
         knots = tuple(knots_array)
         super().visualize_trend(time_series_x, time_series_y, 'Spline Regression'
-                                ,f'Spline degree = {self.degree} with {knots} knots')
+                                , f'Spline degree = {self.degree} with {knots} knots')
