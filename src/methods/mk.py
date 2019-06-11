@@ -36,6 +36,7 @@ class MannKendall(Method):
         
         :param alpha: significance level (0.05 default)
         """
+        self.name = 'MK'
         self.alpha = alpha
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):

@@ -34,6 +34,7 @@ class ITA(Method):
         :param save_format: set the file format of the result
         :param file_id: parameter to set an special id to the generated file
         """
+        self.name = 'ITA'
         self.confidence_level = 1 - confidence
         self.plot = plot
         self.save_path = save_path

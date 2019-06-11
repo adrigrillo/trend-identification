@@ -87,6 +87,23 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
     return x_values, y_values, trend_values, seasonality_values, noise_values
 
 
+def read_generated_csv(file_path: str) -> Tuple:
+    """
+    Method that simplifies the read of a generated csv file to work with the
+    system
+
+    :param file_path: complete path for the csv to read
+    :return: Tuple with the numpy arrays for x, y, trend, seasonality and noise
+    """
+    data = pd.read_csv(file_path)
+    x = data.x.to_numpy()
+    y = data.y.to_numpy()
+    trend = data.trend.to_numpy()
+    seasonality = data.seasonality.to_numpy()
+    noise = data.noise.to_numpy()
+    return x, y, trend, seasonality, noise
+
+
 def file_loader(file_params: configparser.ConfigParser) -> Tuple[np.ndarray, np.ndarray]:
     """
     Method that uses the configuration relative to the data file ([file]) to
@@ -272,6 +289,7 @@ def smooth_for_trend(y_values: np.ndarray, smooth_params: configparser.ConfigPar
         return y_values[:data_points]
     else:
         raise ValueError('The original time series is to short to perform this operation')
+
 
 def reconstruct_trend(self, trend_approx: np.ndarray, levels: int) -> np.ndarray:
     """
