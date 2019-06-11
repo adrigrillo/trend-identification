@@ -7,7 +7,7 @@ from src.methods.method import Method
 class Theil(Method):
 
     def __init__(self, confidence: float = 0.9):
-        self.name = 'Theil'
+        super().__init__('Theil')
         self.confidence = confidence
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):

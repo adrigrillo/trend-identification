@@ -14,6 +14,9 @@ from scipy import stats
 
 class Method(abc.ABC):
 
+    def __init__(self, name: str = 'Method'):
+        self.name = name
+
     @abc.abstractmethod
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         """

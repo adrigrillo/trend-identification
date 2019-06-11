@@ -45,7 +45,7 @@ class HPfilter(Method):
         value of 1600 for quarterly data, 6.25 (1600/4**4) for annual data and
         129600 (1600*3**4) for monthly data.
         """
-        self.name = 'HP filter'
+        super().__init__('HP_Filter')
         self.smoothing = smoothing
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):

@@ -1,34 +1,54 @@
-import configparser
+import glob
+from datetime import datetime
+from typing import List
 
-import numpy as np
 import pandas as pd
 
-from src.definitions import SYNTHETIC_DIR, GENERATED_DIR
+from src.data_handler.data_handler import read_generated_csv
+from src.definitions import GENERATED_DIR, RESULTS_DIR
 from src.methods.dws import DWS
 from src.methods.emd import EmpiricalModeDecomposition
 from src.methods.hp_filter import HPfilter
 from src.methods.ita import ITA
+from src.methods.method import Method
 from src.methods.mk import MannKendall
-from src.methods.regression import Regression
 from src.methods.splines import Splines
 from src.methods.theil import Theil
 
-methods_detection = [MannKendall(), ITA(), Regression(), Theil(), DWS(),
-                     EmpiricalModeDecomposition(), HPfilter(), Regression(),
-                     Splines()]
 
-### DETECTION:
-table = np.zeros((len(methods_detection), 5))
-for i in range(5):
-    name = '/func_' + str(i + 1)
-    data = pd.read_csv(GENERATED_DIR + name + '.csv')
-    config_file_path = SYNTHETIC_DIR + name + '.ini'
-    params = configparser.ConfigParser(allow_no_value=True)
-    params.read(config_file_path)
-    x, y, trend, seasonality, noise = \
-        data.x.to_numpy(), data.y.to_numpy(), data.trend.to_numpy(), data.seasonality.to_numpy(), data.noise.to_numpy()
-    for j in range(len(methods_detection)):
-        detect_trend = methods_detection[j].detect_trend(x, y)
-        table[j][i] = detect_trend[0]
+def trend_detection_comparison(methods_list: List[Method], file_prefix: str,
+                               folder: str = GENERATED_DIR) -> pd.DataFrame:
+    """
+    Search for all the files in the folder, then perform the detection
 
-print(table)
+    :param methods_list: list with the methods that will perform the detection
+    :param file_prefix: prefix of the files that will be used
+    :param folder: folder that will contain the files. Default: data/generated_data
+    :return: table with the results of the different methods and results
+    """
+    files = list()
+    results = dict()
+    columns = [method.name for method in methods_list]
+    for file_path in glob.glob(f'{folder}/{file_prefix}*'):
+        files.append(file_path)
+    files.sort()  # sort by file name
+    for file in files:
+        name = file.split('/')[-1]
+        x, y, trend, seasonality, noise = read_generated_csv(file)
+        file_results = list()
+        for method in methods_list:
+            result = method.detect_trend(x, y)
+            file_results.append(result)
+        results[name] = file_results
+    table = pd.DataFrame(results, columns)
+    time = datetime.now()
+    timestamp = f'{str(time.hour)}-{str(time.minute)}-{str(time.second)}-{str(time.microsecond)}'
+    table.to_csv(f'{RESULTS_DIR}/trend_detection_{file_prefix}_{timestamp}.csv')
+    return table
+
+
+if __name__ == '__main__':
+    methods_detection = [MannKendall(), ITA(), Theil(), DWS(), EmpiricalModeDecomposition(),
+                         HPfilter(), Splines()]
+
+    trend_detection_comparison(methods_detection, 'func')

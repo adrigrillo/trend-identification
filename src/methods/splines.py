@@ -34,10 +34,9 @@ class Splines(Method):
         :param knots: points of division of the series
         :param degree: degree of the polynomial in the regression
         """
-        self.name = 'Splines'
+        super().__init__('Splines')
         self.quantile = quantile
         self.degree = degree
-        # self.knots = knots
 
     def estimate_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         # Cubic spline generation (4 knots)

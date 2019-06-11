@@ -15,7 +15,7 @@ class DWS(Method):
 
         :param wavelet: name of the wavelet to be used
         """
-        self.name = 'DWS'
+        super().__init__('DWS')
         self.wavelet = wavelet
         self.confidence = confidence
         self.num_samples = num_samples

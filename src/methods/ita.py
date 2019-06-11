@@ -22,9 +22,8 @@ from src.methods.method import Method
 
 
 class ITA(Method):
-    def __init__(self, confidence: float = 0.95, plot: bool = False,
-                 save_name: str = 'ita_result', save_path: str = RESULTS_DIR + '/',
-                 save_format: str = 'png', file_id: str = None):
+    def __init__(self, confidence: float = 0.95, plot: bool = False, save_name: str = 'ita_result',
+                 save_path: str = RESULTS_DIR + '/', save_format: str = 'png', file_id: str = None):
         """
         Instantiation method of the innovative trend analysis.
 
@@ -34,7 +33,7 @@ class ITA(Method):
         :param save_format: set the file format of the result
         :param file_id: parameter to set an special id to the generated file
         """
-        self.name = 'ITA'
+        super().__init__('ITA')
         self.confidence_level = 1 - confidence
         self.plot = plot
         self.save_path = save_path
@@ -104,7 +103,7 @@ class ITA(Method):
         plt.legend()
         # Save file with timestamp of the execution
         time = datetime.now()
-        timestamp = '{0}-{1}-{2}-{3}'.format(str(time.hour), str(time.minute), str(time.second), str(time.microsecond))
+        timestamp = f'{str(time.hour)}-{str(time.minute)}-{str(time.second)}-{str(time.microsecond)}'
         if self.file_id is not None:
             file_id = "{0}_{1}".format(self.file_id, timestamp)
         else:

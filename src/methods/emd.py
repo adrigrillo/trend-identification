@@ -6,7 +6,7 @@ from src.methods.method import Method
 
 class EmpiricalModeDecomposition(Method):
     def __init__(self):
-        self.name = 'EMD'
+        super().__init__('EMD')
 
     def detect_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
         trend = self.estimate_trend(time_series_x, time_series_y)
