@@ -9,7 +9,6 @@ import configparser
 from src.definitions import *
 from src.methods.emd import EmpiricalModeDecomposition
 from src.methods.hp_filter import HPfilter
-from src.methods.arima import Arima
 from src.methods.ita import ITA
 from src.methods.mk import MannKendall
 from src.methods.regression import Regression
