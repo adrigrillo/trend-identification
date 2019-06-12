@@ -35,6 +35,3 @@ class Theil(Method):
                                                                  self.confidence)
         trend = intercept + slope * time_series_x
         return trend
-
-    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        super().visualize_trend(time_series_x, time_series_y, 'Theil estimator', 'Estimated trend')

@@ -31,7 +31,7 @@ class Splines(Method):
 
     def __init__(self, quantile: Tuple = (0.25, 0.5, 0.75), degree: int = 3):
         """
-        :param knots: points of division of the series
+        :param quantile: points of division of the series
         :param degree: degree of the polynomial in the regression
         """
         super().__init__('Splines')
@@ -55,8 +55,8 @@ class Splines(Method):
         trend = self.estimate_trend(time_series_x, time_series_y)
         return self.describe_trend_from_array(time_series_x, trend)
 
-    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
+    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray,
+                        title: str = None):
         knots_array = np.quantile(time_series_x, self.quantile)
-        knots = tuple(knots_array)
-        super().visualize_trend(time_series_x, time_series_y, 'Spline Regression'
-                                , f'Spline degree = {self.degree} with {knots} knots')
+        title = f'Estimation with Spline degree = {self.degree} with {tuple(knots_array)} knots'
+        super().visualize_trend(time_series_x, time_series_y, title)

@@ -68,18 +68,23 @@ class Method(abc.ABC):
                     return True, 'Decreasing'
         return False, 'No trend'
 
-    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray, title, label=None):
+    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray,
+                        title: str = None):
+        """
+        Method that generates a plot with the estimation of the method and show it over
+        the data.
+
+        :param time_series_x: time variable of the time series
+        :param time_series_y: value of the time series
+        :param title: title of the plot
+        """
         trend = self.estimate_trend(time_series_x, time_series_y)
-        plt.plot(time_series_x, time_series_y, color='b', label=f'Original data')
-        plt.plot(time_series_x, trend, color='r', label=label)
+        plt.plot(time_series_x, time_series_y, color='b', label='Original data')
+        plt.plot(time_series_x, trend, color='r', label=self.name)
         plt.legend()
         plt.xlabel('Time')
         plt.ylabel('Values')
+        if title is None:
+            title = f'Trend estimation of {self.name}'
         plt.title(title)
         plt.show()
-
-    def distance_between_estimated_and_generated_trend(self, trend_values: np.ndarray, trend_estimation: np.ndarray):
-
-        dist = np.linalg.norm((trend_values - trend_estimation))
-
-        return dist

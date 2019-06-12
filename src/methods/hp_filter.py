@@ -28,7 +28,6 @@ cycle (array) – The estimated cycle in the data given lamb.
 trend (array) – The estimated trend in the data given lamb.
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
 
@@ -62,6 +61,3 @@ class HPfilter(Method):
         """
         cycle, trend = sm.tsa.filters.hpfilter(time_series_y, self.smoothing)
         return trend
-
-    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        super().visualize_trend(time_series_x, time_series_y, 'Hodrick–Prescott filter', 'Estimated trend')

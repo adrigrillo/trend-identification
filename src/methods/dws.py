@@ -118,6 +118,3 @@ class DWS(Method):
         for signal in signals:
             spectrum_values.append(np.var(signal))
         return spectrum_values
-
-    def visualize_trend(self, time_series_x: np.ndarray, time_series_y: np.ndarray):
-        super().visualize_trend(time_series_x, time_series_y, 'Discrete Wavelet Spectrum', 'Estimated trend')

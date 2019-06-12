@@ -10,8 +10,6 @@ Distribution free cumulative sum charts indicate location and significance of
 the change point in time series.
 """
 
-from datetime import datetime
-
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import stats
@@ -19,6 +17,7 @@ from statsmodels.stats.weightstats import ztest
 
 from src.definitions import RESULTS_DIR
 from src.methods.method import Method
+from src.utils import generate_timestamp
 
 
 class ITA(Method):
@@ -102,8 +101,7 @@ class ITA(Method):
                  color='black', linewidth=0.75, linestyle='-')
         plt.legend()
         # Save file with timestamp of the execution
-        time = datetime.now()
-        timestamp = f'{str(time.hour)}-{str(time.minute)}-{str(time.second)}-{str(time.microsecond)}'
+        timestamp = generate_timestamp()
         if self.file_id is not None:
             file_id = "{0}_{1}".format(self.file_id, timestamp)
         else:
