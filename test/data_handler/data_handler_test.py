@@ -52,7 +52,7 @@ class TestGenerateSyntheticData(object):
             read_trend = np.array(data['trend']).T
             read_seasonality = np.array(data['seasonality']).T
             read_noise = np.array(data['noise']).T
-            np.testing.assert_equal(x, read_x)
+            np.testing.assert_almost_equal(x, read_x)
             np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
             np.testing.assert_almost_equal(trend, read_trend)  # almost because of precision float
             np.testing.assert_almost_equal(seasonality, read_seasonality)  # almost because of precision float
@@ -76,7 +76,7 @@ class TestGenerateSyntheticData(object):
             read_trend = np.array(data['trend']).T
             read_seasonality = np.array(data['seasonality']).T
             read_noise = np.array(data['noise']).T
-            np.testing.assert_equal(x, read_x)
+            np.testing.assert_almost_equal(x, read_x)
             np.testing.assert_almost_equal(y, read_y)  # almost because of precision float
             np.testing.assert_almost_equal(trend, read_trend)  # almost because of precision float
             np.testing.assert_almost_equal(seasonality, read_seasonality)  # almost because of precision float

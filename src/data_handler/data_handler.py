@@ -257,7 +257,7 @@ def smooth_for_trend(y_values: np.ndarray, smooth_params: configparser.ConfigPar
     :return: smoothed time series that will be used as trend
     """
     wavelet = smooth_params[WAVELET]
-    levels = int(smooth_params[LEVELS])
+    levels = pywt.dwt_max_level(y_values.shape[0], wavelet)
     data_points = int(smooth_params[DATA_PTS])
 
     # Decompose getting only the details

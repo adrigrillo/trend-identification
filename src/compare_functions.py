@@ -93,11 +93,24 @@ def trend_estimation_comparison(methods_list: List[Method], file_prefix: str,
 
         x, y, trend, seasonality, noise = read_generated_csv(file)
 
+        if params.has_option(TREND_DATA, FUNC):
+            trend_title = params[TREND_DATA][FUNC]
+        else:
+            trend_title = 'Real data'
+        if params.has_option(SEASONALITY_DATA, FUNC):
+            seasonality_title = params[SEASONALITY_DATA][FUNC]
+        else:
+            seasonality_title = 'No seasonality'
+        if params.has_option(NOISE_DATA, SIGNAL_TO_NOISE):
+            noise_title = params[NOISE_DATA][SIGNAL_TO_NOISE]
+        else:
+            noise_title = 'No noise'
+
         # Set the plot
         plt.figure(figsize=(12, 8))
-        plt.title(f'trend: {params[TREND_DATA][FUNC]}, '
-                  f'seasonality: {params[SEASONALITY_DATA][FUNC]}, '
-                  f'snr: {params[NOISE_DATA][SIGNAL_TO_NOISE]}')
+        plt.title(f'trend: {trend_title}, '
+                  f'seasonality: {seasonality_title}, '
+                  f'snr: {noise_title}')
 
         for method in methods_list:
             estimation = method.estimate_trend(x, y)
