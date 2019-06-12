@@ -272,8 +272,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-src/methods/macrodata.dta
-src/methods/test.csv
 
 ### macOS template
 # General

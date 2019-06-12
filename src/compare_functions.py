@@ -106,6 +106,11 @@ def trend_estimation_comparison(methods_list: List[Method], file_prefix: str,
         else:
             noise_title = 'No noise'
 
+        plt.figure(figsize=(12, 8))
+        plt.plot(x, y)
+        plt.savefig(f'{PLOTS_DIR}/data_{name}_{timestamp}.png')
+        plt.close()
+
         # Set the plot
         plt.figure(figsize=(12, 8))
         plt.title(f'trend: {trend_title}, '
