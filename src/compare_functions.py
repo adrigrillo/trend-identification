@@ -57,7 +57,7 @@ def trend_detection_comparison(methods_list: List[Method], file_prefix: str,
 
 
 def trend_estimation_comparison(methods_list: List[Method], file_prefix: str,
-                                folder: str = GENERATED_DIR, test_num: int = 5) -> pd.DataFrame:
+                                folder: str = GENERATED_DIR) -> pd.DataFrame:
     """
     Search for all the files in the folder, then perform the estimation with the
     methods included in the list `methods_list` and generates a table with the

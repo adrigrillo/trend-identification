@@ -18,11 +18,4 @@ if __name__ == '__main__':
     methods_detection = [ITA(), MannKendall(), Regression(), Theil()]
     methods_estimation = [DWS(), EmpiricalModeDecomposition(), HPfilter(), Splines(), Theil(), Regression(), Lowess()]
 
-    # x, y, trend, seasonality, noise = data_handler.generate_synthetic_data('data', 'monthly.ini')
-    #
-    # plt.plot(x, y)
-    # plt.plot(x, trend)
-    # plt.show()
-    #
-    # trend_estimation_comparison(methods_estimation, 'monthly')
     trend_estimation_comparison(methods_estimation, 'func')
