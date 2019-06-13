@@ -37,8 +37,8 @@ class Regression(Method):
         data_complete.append(np.log1p(x))
 
         # Exp
-        data_complete.append(2 ** x)
-        data_complete.append(3 ** x)
+        data_complete.append(2 ** (x/len(x)))
+        data_complete.append(3 ** (x/len(x)))
 
         # Some sinusoids based on series length
         for i in np.arange(1, 3, 0.1):
