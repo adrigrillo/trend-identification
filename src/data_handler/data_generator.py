@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 from src.data_handler.data_handler import generate_synthetic_data, create_function_file
 
@@ -14,8 +15,16 @@ def generate_data(name: str = 'time_series_',
                   poly_max_degree: int = 3,
                   poly_slope_steps: int = 5,
                   data_points: int = 300,
-                  sig_noise_ratio: list = [0, 0.25, 0.5, 0.75],
+                  sig_noise_ratio: list = np.linspace(0,5,20),
                   seasonalities: list = ['np.sin(y)', 'np.sin(3*y)+2*np.cos(y)']):
+
+    # Alternatives for seasonalities, with 3 components.
+    # Amplitude in [-1,1], phase shift in [-pi,pi], period in [0,150] (not uniform, less dense close to 0)
+    seasonalities: list = [ 'np.random.uniform(size=300)*1*np.sin(y/(np.random.uniform(size=300)*150)+(np.random.uniform(size=300)*np.pi))'\
+                            + '+np.random.uniform(size=300)*1*np.sin(y/(np.random.uniform(size=300)*150)+(np.random.uniform(size=300)*np.pi))'\
+                            + '+np.random.uniform(size=300)*1*np.sin(y/(np.random.uniform(size=300)*150)+(np.random.uniform(size=300)*np.pi))' \
+                            for x in range(100) ]
+
     # generate trend functions:
     polynomials = [''] * (poly_max_degree * poly_slope_steps)
     sinusoidals = ['np.sin(310*x)', 'np.sin(410*x)',
@@ -62,4 +71,5 @@ def generate_data(name: str = 'time_series_',
 
 
 if __name__ == '__main__':
-    generate_with_name('func', 5)
+    generate_data()
+    #generate_with_name('func', 5)
