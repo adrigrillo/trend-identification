@@ -20,9 +20,9 @@ def generate_data(name: str = 'time_series_',
 
     # Alternatives for seasonalities, with 3 components.
     # Amplitude in [-1,1], phase shift in [-pi,pi], period in [0,150] (not uniform, less dense close to 0)
-    seasonalities: list = [ 'np.random.uniform(size=300)*1*np.sin(y/(np.random.uniform(size=300)*150)+(np.random.uniform(size=300)*np.pi))'\
-                            + '+np.random.uniform(size=300)*1*np.sin(y/(np.random.uniform(size=300)*150)+(np.random.uniform(size=300)*np.pi))'\
-                            + '+np.random.uniform(size=300)*1*np.sin(y/(np.random.uniform(size=300)*150)+(np.random.uniform(size=300)*np.pi))' \
+    seasonalities: list = [ 'np.random.uniform(size=1)*1*np.sin((x/np.random.uniform(size=1)*150)+(np.random.uniform(size=1)*np.pi))'\
+                            + '+np.random.uniform(size=1)*1*np.sin((x/np.random.uniform(size=1)*150)+(np.random.uniform(size=1)*np.pi))'\
+                            + '+np.random.uniform(size=1)*1*np.sin((x/np.random.uniform(size=1)*150)+(np.random.uniform(size=1)*np.pi))' \
                             for x in range(100) ]
 
     # generate trend functions:
