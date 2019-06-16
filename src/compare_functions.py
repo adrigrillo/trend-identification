@@ -106,28 +106,28 @@ def trend_estimation_comparison(methods_list: List[Method], file_prefix: str,
         else:
             noise_title = 'No noise'
 
-        plt.figure(figsize=(12, 8))
-        plt.plot(x, y)
-        plt.savefig(f'{PLOTS_DIR}/data_{name}_{timestamp}.png')
-        plt.close()
+        # plt.figure(figsize=(12, 8))
+        # plt.plot(x, y)
+        # plt.savefig(f'{PLOTS_DIR}/data_{name}_{timestamp}.png')
+        # plt.close()
 
         # Set the plot
-        plt.figure(figsize=(12, 8))
-        plt.title(f'trend: {trend_title}, '
-                  f'seasonality: {seasonality_title}, '
-                  f'snr: {noise_title}')
+        # plt.figure(figsize=(12, 8))
+        # plt.title(f'trend: {trend_title}, '
+        #           f'seasonality: {seasonality_title}, '
+        #           f'snr: {noise_title}')
 
         for method in methods_list:
             estimation = method.estimate_trend(x, y)
-            plt.plot(x, estimation, label=method.name)
+            # plt.plot(x, estimation, label=method.name)
 
             distance = np.linalg.norm((estimation - trend))
             file_results.append(distance)
 
-        plt.plot(x, trend, label='True trend', linewidth=3.0, color='k', linestyle=':')
-        plt.legend()
-        plt.savefig(f'{PLOTS_DIR}/{name}_{timestamp}.png')
-        plt.close()
+        # plt.plot(x, trend, label='True trend', linewidth=3.0, color='k', linestyle=':')
+        # plt.legend()
+        # plt.savefig(f'{PLOTS_DIR}/{name}_{timestamp}.png')
+        # plt.close()
 
         results[name] = file_results
 

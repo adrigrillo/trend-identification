@@ -20,6 +20,6 @@ from src.methods.theil import Theil
 
 if __name__ == '__main__':
     methods_detection = [ITA(), MannKendall(), Regression(), Theil()]
-    methods_estimation = [DWS(), EmpiricalModeDecomposition(), HPfilter(), Splines(), Theil(), Regression(), Lowess()]
+    methods_estimation = [EmpiricalModeDecomposition(), HPfilter(), Splines(), Theil(), Regression(), Lowess()]
 
-    trend_estimation_comparison(methods_estimation, 'func')
+    trend_estimation_comparison(methods_estimation, 'time_series')
