@@ -19,9 +19,9 @@ def generate_data(name: str = 'time_series_',
                   seasonalities: list = ['np.sin(y)', 'np.sin(3*y)+2*np.cos(y)']):
 
     # Alternatives for seasonalities, with 3 components increasing in frequency and decreasing in amplitude.
-    seasonalities: list = [ 'np.random.uniform(size=1)*1*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*10)+(np.random.uniform(size=1)*2*np.pi))'\
-                            + '+np.random.uniform(size=1)*0.5*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*20)+(np.random.uniform(size=1)*2*np.pi))'\
-                            + '+np.random.uniform(size=1)*0.25*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*50)+(np.random.uniform(size=1)*2*np.pi))' \
+    seasonalities: list = [ 'np.random.uniform(size=1)*1*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*10+1)+(np.random.uniform(size=1)*2*np.pi))'\
+                            + '+np.random.uniform(size=1)*0.5*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*20+1)+(np.random.uniform(size=1)*2*np.pi))'\
+                            + '+np.random.uniform(size=1)*0.25*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*50+1)+(np.random.uniform(size=1)*2*np.pi))' \
                             for x in range(10) ]
 
     # generate trend functions:
