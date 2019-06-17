@@ -83,8 +83,10 @@ def trend_estimation_comparison(methods_list: List[Method], file_prefix: str,
     for file_path in glob.glob(f'{folder}/{file_prefix}*'):
         files.append(file_path)
     files.sort()  # sort by file name
-
+    counter = 0.
     for file in files:
+        counter += 1.
+        print('progress: ', counter/len(files))
         file_results = list()
         name = get_name_from_path(file)
 

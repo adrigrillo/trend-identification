@@ -22,7 +22,7 @@ def generate_data(name: str = 'time_series_',
     seasonalities: list = [ 'np.random.uniform(size=1)*1*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*10)+(np.random.uniform(size=1)*2*np.pi))'\
                             + '+np.random.uniform(size=1)*0.5*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*20)+(np.random.uniform(size=1)*2*np.pi))'\
                             + '+np.random.uniform(size=1)*0.25*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*50)+(np.random.uniform(size=1)*2*np.pi))' \
-                            for x in range(1) ]
+                            for x in range(10) ]
 
     # generate trend functions:
     # 12 structures
@@ -31,11 +31,11 @@ def generate_data(name: str = 'time_series_',
         'a*x**1',
         'a*x**2',
         'a*x**3',
-        'a*x**-1',
-        'a*x**-2',
-        'a*x**-3',
-        'a*x**-(1/2)',
-        'a*x**-(1/3)',
+        'a*(x+1)**-1',
+        'a*(x+1)**-2',
+        'a*(x+1)**-3',
+        'a*x**(1/2)',
+        'a*x**(1/3)',
         'a*x**3 + b*x**2',
         'a*np.sin((x*2*np.pi)/b + c*np.pi)',
         '2**x'
@@ -46,16 +46,16 @@ def generate_data(name: str = 'time_series_',
     coefficients = np.empty([0,3])
 
     # This is done to remember what random values were set for the coefficients.
-    for i in range(1):
+    for i in range(10):
         a, b, c = np.random.uniform(),  np.random.uniform(),  np.random.uniform()
 
         # Add coefficients
         trend_set = np.copy(trend_structures)
+        trends = np.append(trends, [trend_set], axis=0)
         trend_set = np.core.defchararray.replace(trend_set, 'a', str(a))
         trend_set = np.core.defchararray.replace(trend_set, 'b', str(b))
         trend_set = np.core.defchararray.replace(trend_set, 'c', str(c))
 
-        trends = np.append(trends, [trend_set], axis=0)
 
         coefficients = np.append(coefficients, [[a, b, c]], axis=0)
 
@@ -91,11 +91,12 @@ def generate_data(name: str = 'time_series_',
         for noise in sig_noise_ratio:
             for seasonality in seasonalities:
 
-                for trend in trends[i]:
+                for j in range(len(trends[i])):
 
+                    trend = trends[i][j]
                     index += 1
                     # create .ini function file
-                    create_function_file(name + str(index), trend, data_points, noise, seasonality, coefficients[i])
+                    create_function_file(name + str(index), trend, data_points, noise, seasonality, coefficients[i], trend_structures[j])
                     # create .csv data file
                     generate_synthetic_data('function', name + str(index) + '.ini')
                     # generated_xs[index-1], \

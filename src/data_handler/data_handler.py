@@ -306,9 +306,9 @@ def data_squeezer(data: np.ndarray) -> np.ndarray:
     return data
 
 
-def create_function_file(name: str, trend: str, data_points: int, signal_to_noise: float, seasonality: str, coefs: [float]):
+def create_function_file(name: str, trend: str, data_points: int, signal_to_noise: float, seasonality: str, coefs: [float], function_form: str):
     config = configparser.ConfigParser()
-    config['trend'] = {'function': trend, 'data_points': str(data_points), 'a':coefs[0], 'b': coefs[1], 'c':coefs[2]}
+    config['trend'] = {'function': trend, 'function_form':function_form, 'data_points': str(data_points), 'a':coefs[0], 'b': coefs[1], 'c':coefs[2]}
     config['noise'] = {'signal_to_noise': str(signal_to_noise)}
     config['seasonality'] = {'function': seasonality}
     config['save'] = {'filename': name + '.csv'}
