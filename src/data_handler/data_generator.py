@@ -36,8 +36,8 @@ def generate_data(name: str = 'time_series_',
         'a*(x+1)**-3',
         'a*x**(1/2)',
         'a*x**(1/3)',
-        'a*x**3 + b*x**2',
-        'a*np.sin((x*2*np.pi)/b + c*np.pi)',
+        'a*x**3 - b*x**2',
+        'a*np.sin((x*2*np.pi)/(b*2+1) + c*np.pi)',
         '2**x'
     ]
 
@@ -51,11 +51,11 @@ def generate_data(name: str = 'time_series_',
 
         # Add coefficients
         trend_set = np.copy(trend_structures)
-        trends = np.append(trends, [trend_set], axis=0)
         trend_set = np.core.defchararray.replace(trend_set, 'a', str(a))
         trend_set = np.core.defchararray.replace(trend_set, 'b', str(b))
         trend_set = np.core.defchararray.replace(trend_set, 'c', str(c))
 
+        trends = np.append(trends, [trend_set], axis=0)
 
         coefficients = np.append(coefficients, [[a, b, c]], axis=0)
 
