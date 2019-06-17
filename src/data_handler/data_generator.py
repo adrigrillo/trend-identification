@@ -31,14 +31,13 @@ def generate_data(name: str = 'time_series_',
         'a*x**1',
         'a*x**2',
         'a*x**3',
-        'a*(x+1)**-1',
-        'a*(x+1)**-2',
         'a*(x+1)**-3',
         'a*x**(1/2)',
         'a*x**(1/3)',
-        'a*x**3 - b*x**2',
+        'a*x**3 - a*x**2',
+        'a*x**5 - a*x**2 + a*x'
         'a*np.sin((x*2*np.pi)/(b*2+1) + c*np.pi)',
-        '2**x'
+        'a*5**x'
     ]
 
     trends: list = np.empty([0,len(trend_structures)])
