@@ -57,7 +57,7 @@ def generate_synthetic_data(method: str, config_file_name: str) -> Tuple:
             # generate data using data
             file_params = generation_params[FILE_DATA]
             x_values, trend_values = file_loader(file_params)
-            trend_values = smooth_for_trend(trend_values, file_params)
+            # trend_values = smooth_for_trend(trend_values, file_params)
             # Set x between 0 and 1 after getting the trend with desired length
             x_values = np.linspace(0, 1, trend_values.shape[0])
         else:
@@ -306,7 +306,7 @@ def data_squeezer(data: np.ndarray) -> np.ndarray:
     return data
 
 
-def create_function_file(name: str, trend: str, data_points: int, signal_to_noise: float, seasonality: str, coefs: [float], function_form: str):
+def create_function_file_synthetic(name: str, trend: str, data_points: int, signal_to_noise: float, seasonality: str, coefs: [float], function_form: str):
     config = configparser.ConfigParser()
     config['trend'] = {'function': trend, 'function_form':function_form, 'data_points': str(data_points), 'a':coefs[0], 'b': coefs[1], 'c':coefs[2]}
     config['noise'] = {'signal_to_noise': str(signal_to_noise)}
@@ -314,3 +314,14 @@ def create_function_file(name: str, trend: str, data_points: int, signal_to_nois
     config['save'] = {'filename': name + '.csv'}
     with open(SYNTHETIC_DIR + '/' + name + '.ini', 'w') as configfile:
         config.write(configfile)
+
+
+def create_function_file_pseudoreal(index: int, name: str, header: bool, x_col: str, y_col: str, wavelet: str, data_points: int, signal_to_noise: float, seasonality: str):
+    config = configparser.ConfigParser()
+    config['file'] = {'filename': name + '.csv', 'header': header, 'x_column': x_col, 'y_column': y_col, 'wavelet': wavelet, 'data_points': data_points}
+    config['noise'] = {'signal_to_noise': str(signal_to_noise)}
+    config['seasonality'] = {'function': seasonality}
+    config['save'] = {'filename': name + str(index) + '.csv'}
+    with open(SYNTHETIC_DIR + '/' + name + str(index) + '.ini', 'w') as configfile:
+        config.write(configfile)
+

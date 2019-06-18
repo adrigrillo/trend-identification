@@ -1,7 +1,11 @@
 import random
 import numpy as np
+import configparser
+import pandas as pd
 
-from src.data_handler.data_handler import generate_synthetic_data, create_function_file
+from src.data_handler.data_handler import *
+from src.definitions import *
+
 
 
 def generate_with_name(file_name: str, num_files: int):
@@ -11,18 +15,14 @@ def generate_with_name(file_name: str, num_files: int):
 
 
 # Generate time series with trend, seasonality and noise
-def generate_data(name: str = 'time_series_',
-                  poly_max_degree: int = 3,
-                  poly_slope_steps: int = 5,
-                  data_points: int = 300,
-                  sig_noise_ratio: list = np.linspace(0,3,10),
-                  seasonalities: list = ['np.sin(y)', 'np.sin(3*y)+2*np.cos(y)']):
+def generate_data(data_points: int = 300,
+                  sig_noise_ratio: list = np.linspace(0, 3, 10)):
 
     # Alternatives for seasonalities, with 3 components increasing in frequency and decreasing in amplitude.
     seasonalities: list = [ 'np.random.uniform(size=1)*1*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*10+1)+(np.random.uniform(size=1)*2*np.pi))'\
                             + '+np.random.uniform(size=1)*0.5*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*20+1)+(np.random.uniform(size=1)*2*np.pi))'\
                             + '+np.random.uniform(size=1)*0.25*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*50+1)+(np.random.uniform(size=1)*2*np.pi))' \
-                            for x in range(10) ]
+                            for x in range(10)]
 
     # generate trend functions:
     # 12 structures
@@ -40,7 +40,7 @@ def generate_data(name: str = 'time_series_',
         'a*5**x'
     ]
 
-    trends: list = np.empty([0, len(trend_structures)])
+    trends_synthetic: list = np.empty([0, len(trend_structures)])
 
     coefficients = np.empty([0, 3])
 
@@ -54,23 +54,58 @@ def generate_data(name: str = 'time_series_',
         trend_set = np.core.defchararray.replace(trend_set, 'b', str(b))
         trend_set = np.core.defchararray.replace(trend_set, 'c', str(c))
 
-        trends = np.append(trends, [trend_set], axis=0)
-
+        trends_synthetic = np.append(trends_synthetic, [trend_set], axis=0)
         coefficients = np.append(coefficients, [[a, b, c]], axis=0)
 
-    index = 0
-    for i in range(len(trends)):
-        for noise in sig_noise_ratio:
-            for seasonality in seasonalities:
+    trends_pseudoreal: list = [
+        ['monthly', 'Date', 'Price', 833],
+        ['brent-daily_csv', 'time', 'price', 8131],
+        ['data_csv_index', 'time', 'index', 1768],
+        ['data_csv_price', 'time', 'price', 1768],
+        ['data_csv_sp500', 'time', 'sp500', 1768],
+        ['economics_pce', 'time', 'pce', 574],
+        ['economics_unemploy', 'time', 'unemploy', 574],
+        ['maastricht_temp', 'time', 'temp', 153],
+        ['marathon', 'time', 'time_marathon', 120],
+        ['monthly_csv', 'time', 'price', 833],
+        ['number_flight_guests_sysdney_melbourn', 'time', 'number_of_guests', 282],
+        ['vix-daily_csv', 'time', 'score', 3885],
+        ['weather_aachen', 'time', 'QN', 500],
+        ['wti-daily_csv', 'time', 'price', 8424]
+    ]
 
-                for j in range(len(trends[i])):
-
-                    trend = trends[i][j]
-                    index += 1
+    index_synthetic = 0
+    index_pseudoreal = 0
+    for noise in sig_noise_ratio:
+        for seasonality in seasonalities:
+            for i in range(len(trends_synthetic)):
+                for j in range(len(trends_synthetic[i])):
+                    trend = trends_synthetic[i][j]
+                    index_synthetic += 1
                     # create .ini function file
-                    create_function_file(name + str(index), trend, data_points, noise, seasonality, coefficients[i], trend_structures[j])
+                    create_function_file_synthetic('synthetic' + str(index_synthetic), trend, data_points, noise, seasonality, coefficients[i], trend_structures[j])
                     # create .csv data file
-                    generate_synthetic_data('function', name + str(index) + '.ini')
+                    generate_synthetic_data('function', 'synthetic' + str(index_synthetic) + '.ini')
+            index_pseudoreal += 1
+            for i in range(len(trends_pseudoreal)):
+                trend = trends_pseudoreal[i]
+                # create .ini function file
+                create_function_file_pseudoreal(index_pseudoreal, trend[0], True, trend[1], trend[2], 'db8', trend[3], noise, seasonality)
+                # create .csv function file
+                generate_synthetic_data('data', trend[0] + str(index_pseudoreal) + '.ini')
+
+
+def obtain_config(config_file_name: str) -> configparser.ConfigParser:
+    """
+    Read the config file
+
+    :param config_file_name: name of the file
+    :return: parameters in the config file
+    """
+    config = configparser.ConfigParser(allow_no_value=True)
+    config_file_path = SYNTHETIC_DIR + '/' + config_file_name
+    config.read(config_file_path)
+    return config
 
 
 if __name__ == '__main__':
