@@ -7,6 +7,18 @@ from src.data_handler.data_handler import *
 from src.definitions import *
 
 
+from src.compare_functions import trend_estimation_comparison
+from src.data_handler import data_handler
+from src.methods.dws import DWS
+from src.methods.emd import EmpiricalModeDecomposition
+from src.methods.hp_filter import HPfilter
+from src.methods.ita import ITA
+from src.methods.lowess import Lowess
+from src.methods.mk import MannKendall
+from src.methods.regression import Regression
+from src.methods.splines import Splines
+from src.methods.theil import Theil
+
 
 def generate_with_name(file_name: str, num_files: int):
     for i in range(num_files):
@@ -45,7 +57,7 @@ def generate_data(data_points: int = 300,
     coefficients = np.empty([0, 3])
 
     # This is done to remember what random values were set for the coefficients.
-    for i in range(10):
+    for i in range(30):
         a, b, c = np.random.uniform(),  np.random.uniform(),  np.random.uniform()
 
         # Add coefficients
@@ -110,4 +122,9 @@ def obtain_config(config_file_name: str) -> configparser.ConfigParser:
 
 if __name__ == '__main__':
     generate_data()
+
+    methods_detection = [ITA(), MannKendall(), Regression(), Theil()]
+    methods_estimation = [EmpiricalModeDecomposition(), HPfilter(), Splines(), Theil(), Regression(), Lowess()]
+
+    trend_estimation_comparison(methods_estimation, '*')
     #generate_with_name('func', 5)

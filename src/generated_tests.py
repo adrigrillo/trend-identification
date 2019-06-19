@@ -6,7 +6,7 @@ if sys_pf == 'darwin':
 
 import matplotlib.pyplot as plt
 
-from src.compare_functions import trend_estimation_comparison
+from src.compare_functions import trend_estimation_comparison, trend_detection_comparison
 from src.data_handler import data_handler
 from src.methods.dws import DWS
 from src.methods.emd import EmpiricalModeDecomposition
@@ -22,4 +22,5 @@ if __name__ == '__main__':
     methods_detection = [ITA(), MannKendall(), Regression(), Theil()]
     methods_estimation = [EmpiricalModeDecomposition(), HPfilter(), Splines(), Theil(), Regression(), Lowess()]
 
-    trend_estimation_comparison(methods_estimation, 'time_series')
+    trend_detection_comparison(methods_estimation, '*')
+    trend_estimation_comparison(methods_estimation, '*')

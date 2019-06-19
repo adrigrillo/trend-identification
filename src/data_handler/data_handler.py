@@ -318,6 +318,7 @@ def create_function_file_synthetic(name: str, trend: str, data_points: int, sign
 
 def create_function_file_pseudoreal(index: int, name: str, header: bool, x_col: str, y_col: str, wavelet: str, data_points: int, signal_to_noise: float, seasonality: str):
     config = configparser.ConfigParser()
+    config['trend'] = {'function_form': name}
     config['file'] = {'filename': name + '.csv', 'header': header, 'x_column': x_col, 'y_column': y_col, 'wavelet': wavelet, 'data_points': data_points}
     config['noise'] = {'signal_to_noise': str(signal_to_noise)}
     config['seasonality'] = {'function': seasonality}
