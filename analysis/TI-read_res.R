@@ -4,7 +4,7 @@ require(tibble)
 
 print('Reading .ini\'s.')
 
-setwd('/Users/henrymauranen/PycharmProjects/trend-identification/data/synthetic/')
+setwd('../data/synthetic/')
 
 files <- data.frame(file_name=list.files('./'))
 files$SNR <- sapply(files$file_name, function(x) {read.config(paste0('./',x))$noise$signal_to_noise})
@@ -24,9 +24,7 @@ ts_list <- sapply(as.character(files$file_name), function(x) {
 ts_list <- data.frame(t(ts_list))
 ts_list$name <- gsub('\\.ini','',ts_list$name)
 
-print('Reading results.')
-
-setwd('/Users/henrymauranen/PycharmProjects/trend-identification/results/')
+setwd('../../results/')
 
 results <- read.csv('trend_estimation_*_12-38-37-161064.csv',row.names=1,header=F)
 results <- data.frame(t(results))
@@ -41,6 +39,9 @@ ts_list[1:2] <- lapply(ts_list[1:2], as.character)
 colnames(ts_list)[7:12] <- c('EMD_loss','HP_Filter_loss','Splines_loss','Theil_loss','Regression_loss','LOWESS_loss') 
 
 print('Calculating aggregations.')
+setwd('../analysis/')
+dir.create('./results/', showWarnings=F)
+setwd('./results/')
 # -----------
 
 # Losses by pure SNR
@@ -82,16 +83,19 @@ best_methods <- data.frame(
   function.=function_loss$function.,
   best=colnames(function_loss)[apply(-function_loss[-1],1,function(x) which(x==max(x)))+1]
 )
+write.csv(best_methods, file = "best_methods.csv")
 
 # Build ranks w.r.t. functions
 function_ranks <- data.frame(apply(function_loss[-1], 1, rank))
 colnames(function_ranks) <- function_loss$function.
 function_ranks <- data.frame(t(function_ranks))
+write.csv(function_ranks, file = "function_ranks.csv")
 
 # Ranks w.r.t. SNR
 snr_ranks <- data.frame(apply(SNR_loss[-1], 1, rank))
 colnames(snr_ranks) <- SNR_loss$SNR
 snr_ranks <- data.frame(t(snr_ranks))
+write.csv(snr_ranks, file = "snr_ranks.csv")
 
 # With both
 function_snr_ranks <- data.frame(apply(function_snr_loss[c(-1,-2)], 1, rank))
@@ -99,6 +103,7 @@ function_snr_ranks <- data.frame(t(function_snr_ranks))
 function_snr_ranks$function. <- function_snr_loss$function.
 function_snr_ranks$SNR <- function_snr_loss$SNR
 function_snr_ranks <- function_snr_ranks %>% select(function., SNR, everything())
+write.csv(function_snr_ranks, file = "function_snr_ranks.csv")
 
 # Aggregate/sum/whatever the ranks
 
