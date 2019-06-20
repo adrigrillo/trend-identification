@@ -34,7 +34,7 @@ def generate_data(data_points: int = 300,
     seasonalities: list = [ 'np.random.uniform(size=1)*1*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*10+1)+(np.random.uniform(size=1)*2*np.pi))'\
                             + '+np.random.uniform(size=1)*0.5*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*20+1)+(np.random.uniform(size=1)*2*np.pi))'\
                             + '+np.random.uniform(size=1)*0.25*np.sin((y*2*np.pi)*(np.random.uniform(size=1)*50+1)+(np.random.uniform(size=1)*2*np.pi))' \
-                            for x in range(10)]
+                            for x in range(1)]
 
     # generate trend functions:
     # 12 structures
@@ -57,7 +57,7 @@ def generate_data(data_points: int = 300,
     coefficients = np.empty([0, 3])
 
     # This is done to remember what random values were set for the coefficients.
-    for i in range(30):
+    for i in range(1):
         a, b, c = np.random.uniform(),  np.random.uniform(),  np.random.uniform()
 
         # Add coefficients
@@ -70,7 +70,6 @@ def generate_data(data_points: int = 300,
         coefficients = np.append(coefficients, [[a, b, c]], axis=0)
 
     trends_pseudoreal: list = [
-        ['monthly', 'Date', 'Price', 833],
         ['brent-daily_csv', 'time', 'price', 8131],
         ['data_csv_index', 'time', 'index', 1768],
         ['data_csv_price', 'time', 'price', 1768],
