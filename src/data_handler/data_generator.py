@@ -81,7 +81,7 @@ def generate_data(data_points: int = 300,
         ['marathon', 'time', 'time_marathon', 120],
         ['monthly_csv', 'time', 'price', 833],
         ['number_flight_guests_sysdney_melbourn', 'time', 'number_of_guests', 282],
-        ['vix-daily_csv', 'time', 'score', 3885],
+        ['vix-daily_csv', 'time', 'price', 3885],
         ['weather_aachen', 'time', 'QN', 500],
         ['wti-daily_csv', 'time', 'price', 8424]
     ]
