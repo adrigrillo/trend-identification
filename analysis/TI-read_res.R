@@ -7,7 +7,6 @@ print('Reading .ini\'s.')
 setwd('../data/synthetic/')
 
 files <- data.frame(file_name=list.files('./'))
-files$SNR <- sapply(files$file_name, function(x) {read.config(paste0('./',x))$noise$signal_to_noise})
 
 ts_list <- sapply(as.character(files$file_name), function(x) {
   print(x)
@@ -22,11 +21,13 @@ ts_list <- sapply(as.character(files$file_name), function(x) {
 })
 
 ts_list <- data.frame(t(ts_list))
+# Drop weird duplicates?
+ts_list <- ts_list[complete.cases(ts_list),]
 ts_list$name <- gsub('\\.ini','',ts_list$name)
 
 setwd('../../results/')
 
-results <- read.csv('trend_estimation_*_12-38-37-161064.csv',row.names=1,header=F)
+results <- read.csv('trend_estimation___0-3-36-545435.csv',row.names=1,header=F)
 results <- data.frame(t(results))
 colnames(results)[1] <- 'name'
 
