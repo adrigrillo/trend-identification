@@ -123,6 +123,7 @@ SNR_summaries_melt <- melt(SNR_summaries,id.vars=c('SNR'))
 ggplot(SNR_summaries_melt %>% filter(grepl('\\.*median',variable)), aes(x=SNR, y=value, color=variable)) + 
   geom_line() + 
   theme_minimal()
+ggsave('./SNR_losses.png')
 
 # Function v loss
 
@@ -133,10 +134,48 @@ function_summaries <- ts_list %>%
 
 function_summaries_melt <- melt(function_summaries,id.vars=c('function.'))
 
-ggplot(ts_list %>% select(function., contains('loss')) %>% melt(id.vars='function.'), aes(x=function., y=value, color=variable)) +
+function_melt <- ts_list %>%
+  select(name, function., contains('loss')) %>%
+  melt(id.vars=c('function.','name')) %>%
+  group_by(function.,variable)
+
+ggplot(function_melt %>% filter(grepl('synth\\.*', name)) %>% filter(!(abs(value - median(value)) > sd(value))), aes(x=function., y=value, color=variable)) +
   geom_boxplot() +
   theme_minimal() +
   facet_wrap(~function., scales='free')
+ggsave('./synthetic_func_loss.png')
+
+ggplot(function_melt %>% filter(!grepl('synth\\.*', name)), aes(x=function., y=value, color=variable)) +
+  geom_boxplot() +
+  theme_minimal() +
+  facet_wrap(~function., scales='free')
+ggsave('./pseudoreal_func_loss.png')
+
+coef_melt <- ts_list %>%
+  select(name, function., a,b,c, contains('loss')) %>%
+  filter(grepl('synth\\.*', name)) %>%
+  melt(id.vars=c('function.','a','b','c','name')) %>%
+  group_by(function.,name,variable)
+
+for (var in unique(coef_melt$variable)) {
+  print(var)
+  plt <- ggplot(coef_melt %>% ungroup() %>% filter(variable == var) %>% select(function.,a,value) %>% group_by(function.,a) %>% summarize_all(funs(median)), aes(x=a, y=value)) +
+    geom_line() +
+    facet_wrap(~function., scales='free')
+  ggsave(paste0('./',var,'_a.png'))
+  
+  plt <- ggplot(coef_melt %>% ungroup() %>% filter(variable == var, grepl('\\.*b\\.*',function.)) %>% select(function.,b,value) %>% group_by(function.,b) %>% summarize_all(funs(median)), aes(x=b, y=value)) +
+    geom_line() +
+    facet_wrap(~function., scales='free')
+  ggsave(paste0('./',var,'_b.png'))
+  
+  plt <- ggplot(coef_melt %>% ungroup() %>% filter(variable == var, grepl('\\.*c\\.*',function.)) %>% select(function.,c,value) %>% group_by(function.,c) %>% summarize_all(funs(median)), aes(x=c, y=value)) +
+    geom_line() +
+    facet_wrap(~function., scales='free')
+  ggsave(paste0('./',var,'_c.png'))
+}
+
+
 
 # ------------
 print('Done!')
