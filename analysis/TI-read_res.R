@@ -1,6 +1,8 @@
 require(dplyr)
 require(configr)
 require(tibble)
+require(reshape2)
+require(ggplot2)
 
 print('Reading .ini\'s.')
 
@@ -107,6 +109,34 @@ function_snr_ranks <- function_snr_ranks %>% select(function., SNR, everything()
 write.csv(function_snr_ranks, file = "function_snr_ranks.csv")
 
 # Aggregate/sum/whatever the ranks
+
+
+# Plots
+## SNR v loss
+SNR_summaries <- ts_list %>% 
+     select(SNR, EMD_loss, HP_Filter_loss, Splines_loss, Theil_loss, Regression_loss, LOWESS_loss) %>% 
+     group_by(SNR) %>% 
+     summarise_all(funs(median,sd,IQR))
+
+SNR_summaries_melt <- melt(SNR_summaries,id.vars=c('SNR'))
+
+ggplot(SNR_summaries_melt %>% filter(grepl('\\.*median',variable)), aes(x=SNR, y=value, color=variable)) + 
+  geom_line() + 
+  theme_minimal()
+
+# Function v loss
+
+function_summaries <- ts_list %>% 
+  select(function., EMD_loss, HP_Filter_loss, Splines_loss, Theil_loss, Regression_loss, LOWESS_loss) %>%
+  group_by(function.) %>%
+  summarise_all(funs(median,sd,IQR))
+
+function_summaries_melt <- melt(function_summaries,id.vars=c('function.'))
+
+ggplot(ts_list %>% select(function., contains('loss')) %>% melt(id.vars='function.'), aes(x=function., y=value, color=variable)) +
+  geom_boxplot() +
+  theme_minimal() +
+  facet_wrap(~function., scales='free')
 
 # ------------
 print('Done!')
