@@ -22,7 +22,7 @@ ts_list <- sapply(as.character(files$file_name), function(x) {
 
 ts_list <- data.frame(t(ts_list))
 # Drop weird duplicates?
-ts_list <- ts_list[complete.cases(ts_list),]
+ts_list <- na.omit(ts_list)
 ts_list$name <- gsub('\\.ini','',ts_list$name)
 
 setwd('../../results/')
