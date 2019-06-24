@@ -17,4 +17,4 @@ class EmpiricalModeDecomposition(Method):
         emd = EMD()
         emd.emd(time_series_y)
         imfs, res = emd.get_imfs_and_residue()
-        return imfs[-1]
+        return imfs[-1] + np.mean(time_series_y)

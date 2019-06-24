@@ -23,13 +23,11 @@ ts_list <- sapply(as.character(files$file_name), function(x) {
 })
 
 ts_list <- data.frame(t(ts_list))
-# Drop weird duplicates?
-ts_list <- na.omit(ts_list)
 ts_list$name <- gsub('\\.ini','',ts_list$name)
 
 setwd('../../results/')
 
-results <- read.csv('trend_estimation___0-3-36-545435.csv',row.names=1,header=F)
+results <- read.csv('trend_estimation___11-18-24-971788.csv',row.names=1,header=F)
 results <- data.frame(t(results))
 colnames(results)[1] <- 'name'
 
@@ -40,6 +38,9 @@ ts_list[3:length(ts_list)] <- lapply(ts_list[3:length(ts_list)], as.numeric)
 # Names to characters
 ts_list[1:2] <- lapply(ts_list[1:2], as.character)
 colnames(ts_list)[7:12] <- c('EMD_loss','HP_Filter_loss','Splines_loss','Theil_loss','Regression_loss','LOWESS_loss') 
+
+
+ts_list <- na.omit(ts_list)
 
 print('Calculating aggregations.')
 setwd('../analysis/')
@@ -157,6 +158,10 @@ coef_melt <- ts_list %>%
   melt(id.vars=c('function.','a','b','c','name')) %>%
   group_by(function.,name,variable)
 
+
+dir.create('./abc-losses', showWarnings=F)
+setwd('./abc-losses/')
+
 for (var in unique(coef_melt$variable)) {
   print(var)
   plt <- ggplot(coef_melt %>% ungroup() %>% filter(variable == var) %>% select(function.,a,value) %>% group_by(function.,a) %>% summarize_all(funs(median)), aes(x=a, y=value)) +
@@ -175,8 +180,100 @@ for (var in unique(coef_melt$variable)) {
   ggsave(paste0('./',var,'_c.png'))
 }
 
+# ------------
+# Trend detection results
+
+setwd('../..')
+
+setwd('../data/synthetic/')
+
+# Reset ts_list.
+files <- data.frame(file_name=list.files('./'))
+
+ts_list <- sapply(as.character(files$file_name), function(x) {
+  print(x)
+  conf = read.config(paste0('./',x))
+  return(c(name=x,
+           function.=conf$trend$function_form,
+           SNR=as.numeric(conf$noise$signal_to_noise),
+           a=ifelse(is.null(conf$trend$a),0,as.numeric(conf$trend$a)),
+           b=ifelse(is.null(conf$trend$b),0,as.numeric(conf$trend$b)),
+           c=ifelse(is.null(conf$trend$c),0,as.numeric(conf$trend$c))
+  ))
+})
+
+ts_list <- data.frame(t(ts_list))
+ts_list$name <- gsub('\\.ini','',ts_list$name)
+
+setwd('../../results/')
+
+results <- read.csv('trend_detection___16-7-23-536768.csv',row.names=1,header=F)
+results <- data.frame(t(results))
+colnames(results)[1] <- 'name'
+
+# Reads results columns excluding the name and outputs the first true/false in the tuple
+chars <- apply(results[,-1], 2, function(x) { return(unlist(strsplit(gsub('\\(|\\)', '', as.character(x)), ','))) } )
+bools <- lapply(chars, as.logical)
+bools <- lapply(bools, na.omit)
+results[,-1] <- data.frame(bools)
+
+ts_list <- left_join(ts_list, results, by='name')
+# Coerce to numerics
+ts_list[3:6] <- lapply(ts_list[3:length(ts_list)], as.character)
+ts_list[3:6] <- lapply(ts_list[3:length(ts_list)], as.numeric)
+# Names to characters
+ts_list[1:2] <- lapply(ts_list[1:2], as.character)
+
+ts_list <- na.omit(ts_list)
+ts_list$truth <- !grepl('x\\*\\*0',ts_list$function.)
+
+success_rates <- ts_list %>% 
+  select(SNR,ITA,MK,Regression,Theil,truth) %>% 
+  mutate(ITA_success=ITA == truth,
+         MK_success=MK == truth,
+         Reg_success=Regression == truth,
+         Theil_success=Theil == truth) %>% 
+  group_by(SNR) %>% 
+  summarize_all(funs(mean)) %>%
+  select(SNR,ITA_success,MK_success,Reg_success,Theil_success)
+
+success_rates_melt <- melt(success_rates, id.vars = c('SNR'))
+
+ggplot(success_rates_melt, aes(x=SNR,y=value, color=variable)) +
+  geom_line()
+
+pos_rates <- ts_list %>% 
+  select(SNR,ITA,MK,Regression,Theil,truth) %>% 
+  filter(!truth) %>%
+  mutate(ITA_FP=ITA == TRUE & truth == FALSE,
+         MK_FP=MK == TRUE & truth == FALSE,
+         Reg_FP=Regression == TRUE & truth == FALSE,
+         Theil_FP=Theil == TRUE & truth == FALSE) %>% 
+  group_by(SNR) %>% 
+  summarize_all(funs(mean)) %>%
+  select(SNR,ITA_FP,MK_FP,Reg_FP,Theil_FP)
+
+pos_rates_melt <- melt(pos_rates, id.vars = c('SNR'))
 
 
+neg_rates <- ts_list %>% 
+  select(SNR,ITA,MK,Regression,Theil,truth) %>% 
+  filter(truth) %>%
+  mutate(ITA_FN=ITA == FALSE & truth,
+         MK_FN=MK == FALSE & truth,
+         Reg_FN=Regression == FALSE & truth,
+         Theil_FN=Theil == FALSE & truth) %>% 
+  group_by(SNR) %>% 
+  summarize_all(funs(mean)) %>%
+  select(SNR,ITA_FN,MK_FN,Reg_FN,Theil_FN)
+
+neg_rates_melt <- melt(neg_rates, id.vars = c('SNR'))
+
+ggplot(pos_rates_melt, aes(x=SNR,y=value, color=variable)) +
+  geom_line()
+
+ggplot(neg_rates_melt, aes(x=SNR,y=value, color=variable)) +
+  geom_line()
 # ------------
 print('Done!')
 
