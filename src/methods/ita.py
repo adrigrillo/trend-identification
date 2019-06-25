@@ -49,6 +49,9 @@ class ITA(Method):
         :param time_series_x: time variable of the time series to analyze
         :param time_series_y: value of the time series to analyze
         """
+        # Odd time series are problematic
+        if time_series_y.shape[0] // 2 !=0:
+            time_series_y = time_series_y[:-1]
         first_half, second_half = np.split(time_series_y, indices_or_sections=2)
         first_half = np.sort(first_half)
         second_half = np.sort(second_half)
