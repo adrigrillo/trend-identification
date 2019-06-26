@@ -7,7 +7,6 @@ from scipy.io import loadmat
 
 from src.definitions import DATA_DIR, PLOTS_DIR
 from src.methods.dws import DWS
-from src.methods.emd import EmpiricalModeDecomposition
 from src.methods.hp_filter import HPfilter
 from src.methods.ita import ITA
 from src.methods.lowess import Lowess
@@ -15,7 +14,6 @@ from src.methods.method import Method
 from src.methods.mk import MannKendall
 from src.methods.regression import Regression
 from src.methods.splines import Splines
-from src.methods.theil import Theil
 from src.utils import generate_timestamp
 
 
@@ -27,14 +25,16 @@ def show_estimation(methods: List[Method], time_series_x: np.ndarray, time_serie
         plt.plot(time_series_x, time_series_y)
         plt.plot(time_series_x, trend_estimation, label='Estimated trend')
         plt.title(f'Trend estimation of {method.name}')
+        plt.xlabel('Days from January 1962 to July 2012')
+        plt.ylabel('Difference between LOD and 86400 seconds (ms)')
         plt.savefig(f'{PLOTS_DIR}/case_study_{generate_timestamp()}.png')
         plt.show()
         plt.close()
 
 
 if __name__ == '__main__':
-    method_detection = ITA(plot=True)
-    methods_estimation = [HPfilter(), Splines(), Lowess(), Regression()]
+    methods_detection = [MannKendall(), ITA(plot=True)]
+    methods_estimation = [Regression(), Lowess(), Splines(), HPfilter(), DWS()]
 
     data = loadmat(f'{DATA_DIR}/case_study.mat')
     y = data['LOD'].squeeze()
